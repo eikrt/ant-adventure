@@ -10,7 +10,11 @@ Vector3 Object::getVpos() {
 Vector3 Object::getPos() {
     return this->pos;
 }
+Vector3 Object::getDim() {
+    return this->dim;
+}
 void Object::render(Camera camera) {
-            DrawBillboard(camera,this->tex,this->pos, 0.5f, WHITE);
+                DrawCube((Vector3) {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
+                         this->dim.x, this->dim.y, this->dim.z, BROWN);
 
 }

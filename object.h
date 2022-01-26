@@ -17,6 +17,7 @@ class Object {
     }
     Vector3 getPos();
     Vector3 getVpos();
+    Vector3 getDim();
     void render(Camera camera);
     void tick(float gravity);
     void collision(float gravity);

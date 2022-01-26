@@ -2,31 +2,73 @@
 #include "entity.h"
 #include <raylib.h>
 #include <iostream>
+#define JUMP_STRENGTH 0.2f
 using namespace std;
 void Entity::tick(float gravity) {
-    
-    this->pos.x += vpos.x;
-    if (!blockedDown) {
+     
+    if (!this->blockedDown) {
     this->vpos.y -= gravity;
-        this->pos.y += vpos.y;
+        this->pos.y += this->vpos.y;
     }
-    this->pos.z += vpos.z;
+    if (!(this->blockedRight && this->blockedLeft)) {
+        
+    this->pos.x += this->vpos.x;
+    }
+    this->pos.z += this->vpos.z;
+    this->blockedDown = false;
+    this->blockedUp = false;
 }
 void Entity::jump() {
     if (blockedDown) {
-        this->vpos.y = 0.2f;
+        this->vpos.y = JUMP_STRENGTH;
     }
 }
-void Entity::collision_object(Object object) {
-    blockedDown = false;
-    blockedLeft = false;
+void Entity::left() {
     blockedRight = false;
-    blockedUp = false;
-    if (this->pos.y+this->vpos.y - this->dim.y <= object.getVpos().y) {
+    if (!blockedLeft)
+    this->vpos.x = -this->speed;
+}
+void Entity::right() {
+    blockedLeft = false;
+    if (!blockedRight)
+    this->vpos.x = this->speed;
+}
+void Entity::stopX() {
+    this->vpos.x = 0.0f;
+}
+void Entity::stopY() {
+    this->vpos.y = 0.0f;
+}
+void Entity::stopZ() {
+    this->vpos.z = 0.0f;
+}
+void Entity::collision_object(Object object) {
+    if (this->pos.y+this->vpos.y - this->dim.y  <= object.getPos().y + object.getDim().y && this->pos.x > object.getPos().x && this->pos.x < object.getPos().x + object.getDim().x ){
         blockedDown = true;
+        this->stopY();
+    }
+    if (
+            this->pos.y > object.getPos().y &&
+            this->pos.y < object.getPos().y + object.getDim().y &&
+            this->pos.x + this->vpos.x + this->dim.x >= object.getPos().x &&
+            this-> pos.x + this->vpos.x + this->dim.x <= object.getPos().x + object.getDim().x 
+            )
+    {
+        blockedRight = true;
+        this->stopX();
+    }
+    if (
+            this->pos.y > object.getPos().y &&
+            this->pos.y < object.getPos().y + object.getDim().y &&
+            this->pos.x + this->vpos.x - this->dim.x >= object.getPos().x &&
+            this-> pos.x + this->vpos.x - this->dim.x <= object.getPos().x + object.getDim().x 
+            )
+    {
+        blockedLeft = true;
+        this->stopX();
     }
 }
 void Entity::render(Camera camera) {
-            DrawBillboard(camera,this->tex,this->pos, 0.5f, WHITE);
+            DrawBillboard(camera,this->tex,{this->pos.x, this->pos.y, this->pos.z}, 0.5f, WHITE);
 
 }

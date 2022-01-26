@@ -13,12 +13,14 @@ class Entity {
         bool blockedRight;
         bool blockedDown;
         bool blockedUp;
+        float speed;
     public: 
     Entity(Vector3 pos, Vector3 dim, Texture2D tex) {
         this->pos = pos;
         this->tex = tex;
         this->dim = dim;
         this->vpos = {0.0f,0.0f,0.0f};
+        this->speed = 0.05f;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
@@ -28,6 +30,11 @@ class Entity {
     void tick(float gravity);
     void collision_object(Object object);
     void jump();
+    void left();
+    void right();
+    void stopX();
+    void stopY();
+    void stopZ();
 
 };
 #endif
