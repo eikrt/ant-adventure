@@ -17,13 +17,13 @@ int main(void)
 
     // physics
     Camera camera = {
-            .position = {0.0f, 3.0f, 5.0f},
+            .position = {0.0f, 1.0f, 5.0f},
             .target   = {0.0f, 1.0f, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 70.0f,
     };
     Texture2D ant_texture = LoadTexture("res/ant_worker_side_1.png");
-    Entity player({0.0f,1.0f,0.0f},{0.1f,0.1f,0.1f}, ant_texture);
+    Entity player({0.0f,1.0f,1.0f},{0.1f,0.3f,0.1f}, ant_texture);
     Object ground({0.0f,1.0f,0.0f},{100.0f,20.0f,1.0f}, ant_texture);
     float gravity = 0.01f;
 

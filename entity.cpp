@@ -4,17 +4,17 @@
 #include <iostream>
 using namespace std;
 void Entity::tick(float gravity) {
-    this->vpos.y -= gravity;
     
     this->pos.x += vpos.x;
     if (!blockedDown) {
+    this->vpos.y -= gravity;
         this->pos.y += vpos.y;
     }
     this->pos.z += vpos.z;
 }
 void Entity::jump() {
-    if (this->blockedDown) {
-        this->vpos.y += 0.5f;
+    if (blockedDown) {
+        this->vpos.y = 0.2f;
     }
 }
 void Entity::collision_object(Object object) {
@@ -22,7 +22,7 @@ void Entity::collision_object(Object object) {
     blockedLeft = false;
     blockedRight = false;
     blockedUp = false;
-    if (this->pos.y + this->vpos.y < object.getVpos().y) {
+    if (this->pos.y+this->vpos.y - this->dim.y <= object.getVpos().y) {
         blockedDown = true;
     }
 }
