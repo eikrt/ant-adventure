@@ -15,6 +15,8 @@ void Entity::tick(float gravity) {
     this->pos.x += this->vpos.x;
     }
     this->pos.z += this->vpos.z;
+    this-> blockedRight = false;
+    this-> blockedLeft = false;
     this->blockedDown = false;
     this->blockedUp = false;
 }
@@ -48,8 +50,8 @@ void Entity::collision_object(Object object) {
         this->stopY();
     }
     if (
-            this->pos.y > object.getPos().y &&
-            this->pos.y < object.getPos().y + object.getDim().y &&
+            this->pos.y + this->vpos.y > object.getPos().y &&
+            this->pos.y+ this->vpos.y  < object.getPos().y + object.getDim().y &&
             this->pos.x + this->vpos.x + this->dim.x >= object.getPos().x &&
             this-> pos.x + this->vpos.x + this->dim.x <= object.getPos().x + object.getDim().x 
             )
