@@ -1,0 +1,4 @@
+# todos
+
+tausta
+hahmon liike 

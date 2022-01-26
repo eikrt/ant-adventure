@@ -7,11 +7,11 @@ class Object {
         Vector3 pos;
         Vector3 vpos;
         Vector3 dim;
-        Texture2D tex;
+        Model model;
     public: 
-    Object(Vector3 pos, Vector3 dim, Texture2D tex) {
+    Object(Vector3 pos, Vector3 dim, Model model) {
         this->pos = pos;
-        this->tex = tex;
+        this->model = model;
         this->dim = dim;
         this->vpos = {0.0f,0.0f,0.0f};
     }

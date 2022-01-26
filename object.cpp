@@ -14,7 +14,7 @@ Vector3 Object::getDim() {
     return this->dim;
 }
 void Object::render(Camera camera) {
-                DrawCube((Vector3) {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
-                         this->dim.x, this->dim.y, this->dim.z, BROWN);
+                DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
+                        0.5f, BROWN);
 
 }
