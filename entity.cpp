@@ -44,9 +44,24 @@ void Entity::stopY() {
 void Entity::stopZ() {
     this->vpos.z = 0.0f;
 }
+void Entity::slowX() {
+    if (this->vpos.x < -0.01) {
+        this->vpos.x += 0.01;
+    }
+    else if (this->vpos.x > 0.01) {
+        this->vpos.x -= 0.01;
+    }
+    else {
+        this->stopX();
+    }
+}
 void Entity::collision_object(Object object) {
     if (this->pos.y+this->vpos.y - this->dim.y  <= object.getPos().y + object.getDim().y && this->pos.x > object.getPos().x && this->pos.x < object.getPos().x + object.getDim().x ){
         blockedDown = true;
+        if (this->pos.y + this->vpos.y - this->dim.y > object.getPos().y + object.getDim().y) {
+        
+            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
+        }
         this->stopY();
     }
     if (

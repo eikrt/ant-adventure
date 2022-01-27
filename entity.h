@@ -28,11 +28,13 @@ class Entity {
     }
     void render(Camera camera);
     void tick(float gravity);
+    
     void collision_object(Object object);
     void jump();
     void left();
     void right();
     void stopX();
+    void slowX();
     void stopY();
     void stopZ();
 

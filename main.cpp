@@ -3,8 +3,18 @@
 #include "player.h"
 #include <vector>
 using namespace std;
-int main(void)
+int main(int argc, char* argv[])
 {
+    enum Mode {game, editor};
+    Mode currentMode = game;
+    if (argc == 1){
+        currentMode = game;
+    }
+    else if (argc > 0) {
+        if (argv[1] == "editor") {
+            currentMode = editor;
+        }
+    }
     const int screenWidth = 800;
     const int screenHeight = 450;
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
@@ -18,10 +28,10 @@ int main(void)
 
     // physics
     Camera camera = {
-            .position = {0.0f, 1.0f, 5.0f},
+            .position = {0.0f, 3.0f, 40.0f},
             .target   = {0.0f, 1.0f, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
-            .fovy     = 70.0f,
+            .fovy     = 10.0f,
     };
     //Image cube_img = LoadImage("res/stone_brick.png"); 
     //Mesh mesh = GenMeshCubicmap(cube_img, (Vector3){ 1.0f, 1.0f, 1.0f });
@@ -64,7 +74,7 @@ int main(void)
             if (IsKeyDown(KEY_A))
                 player.left();
             if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
-                player.stopX();
+                player.slowX();
             BeginMode3D(camera);
                 DrawCube((Vector3) {0.0f, -1.0f, 0.0f}, 200.0f,0.1f,200.0f,(Color){51,153,51, 255});
                 for (auto &obj : objects) {
