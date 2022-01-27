@@ -14,11 +14,13 @@ class Entity {
         bool blockedDown;
         bool blockedUp;
         float speed;
+        float scale;
     public: 
-    Entity(Vector3 pos, Vector3 dim, Texture2D tex) {
+    Entity(Vector3 pos, Vector3 dim, float scale, Texture2D tex) {
         this->pos = pos;
         this->tex = tex;
         this->dim = dim;
+        this->scale = scale;
         this->vpos = {0.0f,0.0f,0.0f};
         this->speed = 0.05f;
         blockedLeft = false;

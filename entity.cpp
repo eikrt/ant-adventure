@@ -86,6 +86,6 @@ void Entity::collision_object(Object object) {
     }
 }
 void Entity::render(Camera camera) {
-            DrawBillboard(camera,this->tex,{this->pos.x, this->pos.y, this->pos.z}, 0.5f, WHITE);
+            DrawBillboard(camera,this->tex,{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
 
 }

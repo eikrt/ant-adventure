@@ -1,8 +1,14 @@
 #include <raylib.h>
 #include <iostream>
 #include "player.h"
+#include "scenery.h"
 #include <vector>
+#include <map>
+const float SCENEDIST =0.0f;
+#define WIDTH 640
+#define HEIGHT 420
 using namespace std;
+
 int main(int argc, char* argv[])
 {
     enum Mode {game, editor};
@@ -15,8 +21,8 @@ int main(int argc, char* argv[])
             currentMode = editor;
         }
     }
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 1024;
+    const int screenHeight = 576;
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
 
     InitWindow(screenWidth, screenHeight, "Ant Adventure");
@@ -28,8 +34,8 @@ int main(int argc, char* argv[])
 
     // physics
     Camera camera = {
-            .position = {0.0f, 3.0f, 40.0f},
-            .target   = {0.0f, 1.0f, 0.0f},
+            .position = {0.0f, 5.0f, 80.0f},
+            .target   = {0.0f, 6.0f, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 10.0f,
     };
@@ -37,22 +43,28 @@ int main(int argc, char* argv[])
     //Mesh mesh = GenMeshCubicmap(cube_img, (Vector3){ 1.0f, 1.0f, 1.0f });
    // Model cube = LoadModelFromMesh(mesh);
     Model cube = LoadModel("models/cube.obj");
-    Texture2D ant_texture = LoadTexture("res/ant_worker_side_1.png");
-    Texture2D spruce_texture = LoadTexture("res/spruce.png");
-    Texture2D cube_texture = LoadTexture("res/stone_brick.png");
-    cube.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = cube_texture;
-    Entity player({0.1f,1.0f,0.3f},{0.4f,0.25f,0.1f}, ant_texture);
-    vector<Object> objects;
-    objects.push_back(Object({0.0f,-1.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({-2.0f,-1.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({-1.0f,-1.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({1.0f,-1.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({1.0f,0.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({2.0f,1.0f,0.0f},{1.0f,1.0f,1.0f}, cube));
-    vector<Entity> scenery;
-    scenery.push_back(Entity({0.0f,0.0f,-5.3f},{0.4f,0.25f,0.1f}, spruce_texture));
-    float gravity = 0.01f;
+    Model ground = LoadModel("models/scenery.obj");
 
+    map<string, Texture2D> textures;
+    textures["player"] = LoadTexture("res/ant_worker_side_1.png");
+    textures["spruce"] = LoadTexture("res/spruce.png");
+    textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
+    textures["grass"] = LoadTexture("res/grass.png");
+    cube.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
+    ground.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
+    Entity player({0.1f,1.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
+    vector<Object> objects;
+    objects.push_back(Object({0.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    objects.push_back(Object({-2.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    objects.push_back(Object({-1.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    objects.push_back(Object({1.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    objects.push_back(Object({1.0f,0.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    objects.push_back(Object({2.0f,1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    vector<Scenery> scenes;
+    
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, ground, textures));
+    float gravity = 0.01f;
+    RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     while (!WindowShouldClose())
     {
         player.tick(gravity);
@@ -61,8 +73,7 @@ int main(int argc, char* argv[])
         }
        // player.collision_object(ground);
         //player.collision_object(cube);
-
-        BeginDrawing();
+        BeginTextureMode(target);
         {
             ClearBackground(SKYBLUE);
 
@@ -76,26 +87,30 @@ int main(int argc, char* argv[])
             if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
                 player.slowX();
             BeginMode3D(camera);
-                DrawCube((Vector3) {0.0f, -1.0f, 0.0f}, 200.0f,0.1f,200.0f,(Color){51,153,51, 255});
                 for (auto &obj : objects) {
                     obj.render(camera);
                 }
-                for (auto &s : scenery) {
+                for (auto &s : scenes) {
                     s.render(camera);
                 }
             player.render(camera);
             EndMode3D();
             EndTextureMode();
 
-
         }
+        BeginDrawing();
+            //DrawTextureRec(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT}, Vector2{0, 0}, WHITE);
+            DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
         EndDrawing();
     }
 
 
     // end stuff
-    UnloadTexture(ant_texture);
+    for (auto const& t : textures) {
+        UnloadTexture(t.second);
+    }
     UnloadModel(cube);
+    UnloadRenderTexture(target);
     CloseWindow();
 
     return 0;
