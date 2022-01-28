@@ -2,8 +2,10 @@
 #include <iostream>
 #include "player.h"
 #include "scenery.h"
+#include "level.h"
 #include <vector>
 #include <map>
+#include <iostream>
 const float SCENEDIST =0.0f;
 #define WIDTH 640
 #define HEIGHT 420
@@ -23,6 +25,7 @@ int main(int argc, char* argv[])
     }
     const int screenWidth = 1024;
     const int screenHeight = 576;
+    int currentLevel = 0;
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
 
     InitWindow(screenWidth, screenHeight, "Ant Adventure");
@@ -39,36 +42,39 @@ int main(int argc, char* argv[])
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 10.0f,
     };
-    //Image cube_img = LoadImage("res/stone_brick.png"); 
-    //Mesh mesh = GenMeshCubicmap(cube_img, (Vector3){ 1.0f, 1.0f, 1.0f });
-   // Model cube = LoadModelFromMesh(mesh);
-    Model cube = LoadModel("models/cube.obj");
-    Model ground = LoadModel("models/scenery.obj");
+    map<string, Model> models;
+    models["cube"] = LoadModel("models/cube.obj");
+    models["ground"] = LoadModel("models/scenery.obj");
 
     map<string, Texture2D> textures;
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
     textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
     textures["grass"] = LoadTexture("res/grass.png");
-    cube.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
-    ground.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
-    Entity player({0.1f,1.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
-    vector<Object> objects;
-    objects.push_back(Object({0.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({-2.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({-1.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({1.0f,-1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({1.0f,0.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
-    objects.push_back(Object({2.0f,1.0f,SCENEDIST},{1.0f,1.0f,1.0f}, cube));
+    models["cube"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
+    models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
+    Entity player({0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
+    vector<Level> levels;
+    levels.push_back(Level("levels/level_0", models, textures));
     vector<Scenery> scenes;
     
-    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, ground, textures));
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
     float gravity = 0.01f;
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     while (!WindowShouldClose())
     {
+        if (player.getPos().x - camera.position.x > 10.0) {
+        
+            camera.position.x = player.getPos().x + 10;
+            camera.target.x = player.getPos().x + 10;
+        }
+        else if (player.getPos().x - camera.position.x < -10.0) {
+            camera.position.x = player.getPos().x - 10;
+            camera.target.x = player.getPos().x - 10;
+        }
+
         player.tick(gravity);
-        for (auto &obj : objects) {
+        for (auto &obj : levels[currentLevel].getObjects()) {
             player.collision_object(obj);
         }
        // player.collision_object(ground);
@@ -87,7 +93,7 @@ int main(int argc, char* argv[])
             if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
                 player.slowX();
             BeginMode3D(camera);
-                for (auto &obj : objects) {
+                for (auto &obj : levels[currentLevel].getObjects()) {
                     obj.render(camera);
                 }
                 for (auto &s : scenes) {
@@ -109,7 +115,9 @@ int main(int argc, char* argv[])
     for (auto const& t : textures) {
         UnloadTexture(t.second);
     }
-    UnloadModel(cube);
+    for (auto const& m : models) {
+        UnloadModel(m.second);
+    }
     UnloadRenderTexture(target);
     CloseWindow();
 

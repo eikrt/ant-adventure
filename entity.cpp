@@ -4,6 +4,10 @@
 #include <iostream>
 #define JUMP_STRENGTH 0.2f
 using namespace std;
+Vector3 Entity::getPos() {
+    return this->pos;
+}
+
 void Entity::tick(float gravity) {
      
     if (!this->blockedDown) {
@@ -56,30 +60,54 @@ void Entity::slowX() {
     }
 }
 void Entity::collision_object(Object object) {
-    if (this->pos.y+this->vpos.y - this->dim.y  <= object.getPos().y + object.getDim().y && this->pos.x > object.getPos().x && this->pos.x < object.getPos().x + object.getDim().x ){
+    float ePosX = this->pos.x+this->vpos.x;
+    float ePosY = this->pos.y+this->vpos.y;
+    float eRightX = ePosX + this->dim.x;
+    float eLeftX = ePosX - this->dim.x;
+    float eTopY = ePosY + this->dim.y;
+    float eBottomY = ePosY - this->dim.y;
+
+    float oRightX = object.getPos().x + object.getDim().x;
+    float oLeftX = object.getPos().x - object.getDim().x;
+    float oTopY = object.getPos().y + object.getDim().y;
+    float oBottomY = object.getPos().y - object.getDim().y;
+    
+    if (eBottomY  <= oTopY
+            && eBottomY >= object.getPos().y
+            && ePosX > object.getPos().x - 0.2 
+            && ePosX < oRightX) {
         blockedDown = true;
-        if (this->pos.y + this->vpos.y - this->dim.y > object.getPos().y + object.getDim().y) {
+        if (eBottomY > object.getPos().y + object.getDim().y) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
         }
         this->stopY();
     }
+    if (eTopY  <= oTopY
+            && eTopY >= object.getPos().y
+            && ePosX > object.getPos().x - 0.2 
+            && ePosX < oRightX) {
+        blockedUp = true;
+        if (eBottomY > object.getPos().y + object.getDim().y) {
+        
+            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
+        }
+        this->vpos.y = -0.1f;
+    }
     if (
-            this->pos.y + this->vpos.y > object.getPos().y &&
-            this->pos.y+ this->vpos.y  < object.getPos().y + object.getDim().y &&
-            this->pos.x + this->vpos.x + this->dim.x >= object.getPos().x &&
-            this-> pos.x + this->vpos.x + this->dim.x <= object.getPos().x + object.getDim().x 
-            )
+            ePosY > object.getPos().y &&
+            ePosY  < oTopY &&
+            eRightX >= object.getPos().x &&
+            eRightX <= oRightX)
     {
         blockedRight = true;
         this->stopX();
     }
     if (
-            this->pos.y > object.getPos().y &&
-            this->pos.y < object.getPos().y + object.getDim().y &&
-            this->pos.x + this->vpos.x - this->dim.x >= object.getPos().x &&
-            this-> pos.x + this->vpos.x - this->dim.x <= object.getPos().x + object.getDim().x 
-            )
+            ePosY > object.getPos().y &&
+            ePosY < oTopY &&
+            eLeftX >= object.getPos().x &&
+            eLeftX <= oRightX)
     {
         blockedLeft = true;
         this->stopX();

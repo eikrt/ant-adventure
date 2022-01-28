@@ -1,2 +1,2 @@
 main:
-	g++ main.cpp entity.cpp player.cpp object.cpp scenery.cpp generator.cpp perlin.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+	g++ main.cpp entity.cpp player.cpp object.cpp scenery.cpp generator.cpp level.cpp perlin.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
