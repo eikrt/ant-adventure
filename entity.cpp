@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <iostream>
 #define JUMP_STRENGTH 0.2f
+#define BOUNCE 0.1f
 using namespace std;
 Vector3 Entity::getVpos() {
     return this->vpos;
@@ -13,9 +14,16 @@ Vector3 Entity::getPos() {
 Vector3 Entity::getDim() {
     return this->dim;
 }
-
+int Entity::getHp(){
+    return this->hp;
+}
+int Entity::getId() {
+    return this->id;
+}
+void Entity::damage() {
+    this->hp -= 1;
+}
 void Entity::tick(float gravity) {
-     
     if (!this->blockedDown) {
     this->vpos.y -= gravity;
         this->pos.y += this->vpos.y;
@@ -33,6 +41,11 @@ void Entity::tick(float gravity) {
 void Entity::jump() {
     if (blockedDown) {
         this->vpos.y = JUMP_STRENGTH;
+    }
+}
+void Entity::shortJump() {
+    if (blockedDown) {
+        this->vpos.y = JUMP_STRENGTH / 2;
     }
 }
 void Entity::left() {
@@ -108,6 +121,10 @@ void Entity::collision_object(Object object) {
     {
         blockedRight = true;
         this->stopX();
+        if (string(this->type) == "fungus" ){
+            this->left();
+
+        }
     }
     if (
             ePosY > object.getPos().y &&
@@ -117,9 +134,13 @@ void Entity::collision_object(Object object) {
     {
         blockedLeft = true;
         this->stopX();
+        if (string(this->type) == "fungus" ){
+            this->right();
+
+        }
     }
 }
-void Entity::collision_entity(Entity otherEntity) {
+void Entity::collision_entity(Entity& otherEntity) {
     float ePosX = this->pos.x+this->vpos.x;
     float ePosY = this->pos.y+this->vpos.y;
     float eRightX = ePosX + this->dim.x;
@@ -141,7 +162,9 @@ void Entity::collision_entity(Entity otherEntity) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
         }
+        otherEntity.damage();
         this->stopY();
+        this->jump();
     }
     if (eTopY  <= oTopY
             && eTopY >= otherEntity.getPos().y
@@ -152,7 +175,7 @@ void Entity::collision_entity(Entity otherEntity) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
         }
-        this->vpos.y = -0.1f;
+        this->vpos.y = BOUNCE;
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -162,6 +185,9 @@ void Entity::collision_entity(Entity otherEntity) {
     {
         blockedRight = true;
         this->stopX();
+        if (string(this->type) == "player" && string(otherEntity.type) == "fungus") {
+            this->damage();
+        }
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -171,6 +197,9 @@ void Entity::collision_entity(Entity otherEntity) {
     {
         blockedLeft = true;
         this->stopX();
+        if (string(this->type) == "player" && string(otherEntity.type) == "fungus") {
+            this->damage();
+        }
     }
 }
 void Entity::render(Camera camera) {

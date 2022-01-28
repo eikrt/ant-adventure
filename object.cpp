@@ -13,6 +13,9 @@ Vector3 Object::getPos() {
 Vector3 Object::getDim() {
     return this->dim;
 }
+int Object::getHp() {
+    return this->hp;
+}
 void Object::render(Camera camera) {
                 DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
                         0.5f, BROWN);

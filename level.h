@@ -7,12 +7,13 @@
 #include <raylib.h>
 #include "object.h"
 #include "entity.h"
+#include "monster.h"
 using namespace std;
 class Level {
     private:
+    public:
         vector<Object> objects; 
         vector<Entity> entities; 
-    public:
         Level(string path, map<string,Model> models, map<string, Texture2D> textures) {
              vector<char> bytes;
              char byte = 0;
@@ -29,11 +30,15 @@ class Level {
                     float y = -i + levelSize;
                     if (bytes[i * levelSize + j] == '1')
                     this->objects.push_back(Object({(float) x ,(float) y,0.0f},{1.0f,1.0f,1.0f}, models["cube"]));
-                    if (bytes[i * levelSize + j] == 'f')
-                    this->entities.push_back(Entity({(float)x,y+0.5f,0.0f},{0.4f,0.25f,0.1f}, 1.0f, textures["fungus"]));
+                    if (bytes[i * levelSize + j] == 'f') {
+                        Entity entity = Entity(rand(), "fungus", 0.03f, {(float)x,y+1.0f,0.0f},{0.4f,0.5f,0.1f}, 1.0f, textures["fungus"]);
+                        entity.left();
+                        this->entities.push_back(entity);
+
+
+                    }
 
                 }
-
             }
             file.close();
         }

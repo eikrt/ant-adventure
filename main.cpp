@@ -1,11 +1,13 @@
 #include <raylib.h>
 #include <iostream>
 #include "player.h"
+#include "monster.h"
 #include "scenery.h"
 #include "level.h"
 #include <vector>
 #include <map>
 #include <iostream>
+#include <algorithm>
 const float SCENEDIST =0.0f;
 #define WIDTH 640
 #define HEIGHT 420
@@ -54,7 +56,7 @@ int main(int argc, char* argv[])
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     models["cube"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
-    Entity player({0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
+    Entity player(0, "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
     vector<Level> levels;
     levels.push_back(Level("levels/level_0", models, textures));
     vector<Scenery> scenes;
@@ -64,6 +66,7 @@ int main(int argc, char* argv[])
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     while (!WindowShouldClose())
     {
+        
         if (player.getPos().x - camera.position.x > 10.0) {
         
             camera.position.x = player.getPos().x + 10;
@@ -75,13 +78,32 @@ int main(int argc, char* argv[])
         }
 
         player.tick(gravity);
-        for (auto &e : levels[currentLevel].getEntities()) {
+        if (player.getHp() <= 0) {
+        }
+
+        for (auto &e : levels[currentLevel].entities) {
+            if (e.getHp() <= 0) {
+                continue;
+            }
+
+            for (auto &obj : levels[currentLevel].getObjects()) {
+                if (obj.getHp() <= 0) {
+                    continue;
+                }
+                e.collision_object(obj);
+            }
             e.tick(gravity);
         }
         for (auto &obj : levels[currentLevel].getObjects()) {
+            if (obj.getHp() <= 0) {
+                continue;
+            }
             player.collision_object(obj);
         }
-        for (auto &e : levels[currentLevel].getEntities()) {
+        for (auto &e : levels[currentLevel].entities) {
+            if (e.getHp() <= 0) {
+                continue;
+            }
             player.collision_entity(e);
         }
        // player.collision_object(ground);
@@ -101,9 +123,17 @@ int main(int argc, char* argv[])
                 player.slowX();
             BeginMode3D(camera);
                 for (auto &obj : levels[currentLevel].getObjects()) {
+
+                    if (obj.getHp() <= 0) {
+                        continue;
+                    }
                     obj.render(camera);
                 }
                 for (auto &e : levels[currentLevel].getEntities()) {
+
+                    if (e.getHp() <= 0) {
+                        continue;
+                    }
                     e.render(camera);
                 }
                 for (auto &s : scenes) {
