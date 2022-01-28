@@ -4,8 +4,14 @@
 #include <iostream>
 #define JUMP_STRENGTH 0.2f
 using namespace std;
+Vector3 Entity::getVpos() {
+    return this->vpos;
+}
 Vector3 Entity::getPos() {
     return this->pos;
+}
+Vector3 Entity::getDim() {
+    return this->dim;
 }
 
 void Entity::tick(float gravity) {
@@ -107,6 +113,60 @@ void Entity::collision_object(Object object) {
             ePosY > object.getPos().y &&
             ePosY < oTopY &&
             eLeftX >= object.getPos().x &&
+            eLeftX <= oRightX)
+    {
+        blockedLeft = true;
+        this->stopX();
+    }
+}
+void Entity::collision_entity(Entity otherEntity) {
+    float ePosX = this->pos.x+this->vpos.x;
+    float ePosY = this->pos.y+this->vpos.y;
+    float eRightX = ePosX + this->dim.x;
+    float eLeftX = ePosX - this->dim.x;
+    float eTopY = ePosY + this->dim.y;
+    float eBottomY = ePosY - this->dim.y;
+
+    float oRightX = otherEntity.getPos().x + otherEntity.getDim().x;
+    float oLeftX = otherEntity.getPos().x - otherEntity.getDim().x;
+    float oTopY = otherEntity.getPos().y + otherEntity.getDim().y;
+    float oBottomY = otherEntity.getPos().y - otherEntity.getDim().y;
+    
+    if (eBottomY  <= oTopY
+            && eBottomY >= otherEntity.getPos().y
+            && ePosX > otherEntity.getPos().x - 0.2 
+            && ePosX < oRightX) {
+        blockedDown = true;
+        if (eBottomY > otherEntity.getPos().y + otherEntity.getDim().y) {
+        
+            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
+        }
+        this->stopY();
+    }
+    if (eTopY  <= oTopY
+            && eTopY >= otherEntity.getPos().y
+            && ePosX > otherEntity.getPos().x - 0.2 
+            && ePosX < oRightX) {
+        blockedUp = true;
+        if (eBottomY > otherEntity.getPos().y + otherEntity.getDim().y) {
+        
+            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
+        }
+        this->vpos.y = -0.1f;
+    }
+    if (
+            ePosY > otherEntity.getPos().y &&
+            ePosY  < oTopY &&
+            eRightX >= otherEntity.getPos().x &&
+            eRightX <= oRightX)
+    {
+        blockedRight = true;
+        this->stopX();
+    }
+    if (
+            ePosY > otherEntity.getPos().y &&
+            ePosY < oTopY &&
+            eLeftX >= otherEntity.getPos().x &&
             eLeftX <= oRightX)
     {
         blockedLeft = true;

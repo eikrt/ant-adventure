@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
     textures["spruce"] = LoadTexture("res/spruce.png");
     textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
     textures["grass"] = LoadTexture("res/grass.png");
+    textures["fungus"] = LoadTexture("res/fungus_monster.png");
     models["cube"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
     Entity player({0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
@@ -74,8 +75,14 @@ int main(int argc, char* argv[])
         }
 
         player.tick(gravity);
+        for (auto &e : levels[currentLevel].getEntities()) {
+            e.tick(gravity);
+        }
         for (auto &obj : levels[currentLevel].getObjects()) {
             player.collision_object(obj);
+        }
+        for (auto &e : levels[currentLevel].getEntities()) {
+            player.collision_entity(e);
         }
        // player.collision_object(ground);
         //player.collision_object(cube);
@@ -95,6 +102,9 @@ int main(int argc, char* argv[])
             BeginMode3D(camera);
                 for (auto &obj : levels[currentLevel].getObjects()) {
                     obj.render(camera);
+                }
+                for (auto &e : levels[currentLevel].getEntities()) {
+                    e.render(camera);
                 }
                 for (auto &s : scenes) {
                     s.render(camera);

@@ -30,8 +30,11 @@ class Entity {
     }
     void render(Camera camera);
     void tick(float gravity);
-    Vector3 getPos(); 
+    Vector3 getPos();
+    Vector3 getVpos();
+    Vector3 getDim();
     void collision_object(Object object);
+    void collision_entity(Entity otherEntity);
     void jump();
     void left();
     void right();
