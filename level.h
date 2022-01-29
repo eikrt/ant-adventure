@@ -1,3 +1,5 @@
+#ifndef LEVEL_H
+#define LEVEL_H
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -31,7 +33,7 @@ class Level {
                     if (bytes[i * levelSize + j] == '1')
                     this->objects.push_back(Object({(float) x ,(float) y,0.0f},{1.0f,1.0f,1.0f}, models["cube"]));
                     if (bytes[i * levelSize + j] == 'f') {
-                        Entity entity = Entity(rand(), "fungus", 0.03f, {(float)x,y+1.0f,0.0f},{0.4f,0.5f,0.1f}, 1.0f, textures["fungus"]);
+                        Entity entity = Entity(rand(), "fungus", 0.03f, {(float)x,y+1.0f,0.0f},{1.0f,0.5f,0.1f}, 1.0f, textures["fungus"]);
                         entity.left();
                         this->entities.push_back(entity);
 
@@ -45,3 +47,4 @@ class Level {
     vector<Object> getObjects();
     vector<Entity> getEntities();
 };
+#endif

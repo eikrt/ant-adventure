@@ -114,8 +114,8 @@ void Entity::collision_object(Object object) {
         this->vpos.y = -0.1f;
     }
     if (
-            ePosY > object.getPos().y &&
-            ePosY  < oTopY &&
+            eBottomY + 0.1 > object.getPos().y &&
+            eBottomY + 0.1 < oTopY &&
             eRightX >= object.getPos().x &&
             eRightX <= oRightX)
     {
@@ -127,8 +127,8 @@ void Entity::collision_object(Object object) {
         }
     }
     if (
-            ePosY > object.getPos().y &&
-            ePosY < oTopY &&
+            eBottomY + 0.1 > object.getPos().y &&
+            eBottomY + 0.1 < oTopY &&
             eLeftX >= object.getPos().x &&
             eLeftX <= oRightX)
     {
