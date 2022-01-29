@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
     Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
     vector<Level> levels;
-    levels.push_back(Level("levels/level_0", models, textures));
+    levels.push_back(Level("levels/level_0_", models, textures));
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));

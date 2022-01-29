@@ -17,35 +17,52 @@ class Level {
         vector<Object> objects; 
         vector<Entity> entities; 
         Level(string path, map<string,Model> models, map<string, Texture2D> textures) {
-             vector<char> bytes;
-             char byte = 0;
-             
-             ifstream file(path);
-            while (file.get(byte)) {
-                if (byte != '\n')
-                bytes.push_back(byte);
+            vector<vector<char>> bytes;
+            bytes.push_back(vector<char>());
+            bytes.push_back(vector<char>());
+            bytes.push_back(vector<char>());
+            for (int i = 0; i < 3; i++) { 
+                char byte = 0;
+                ifstream file(path + to_string(i)); 
+                    while (file.get(byte)) {
+                        if (byte != '\n')
+                            bytes[i].push_back(byte);
+                        
+                    }
+
+            file.close();
             }
-            int levelSize = sqrt(bytes.size());
+            int levelSize = sqrt(bytes[0].size());
+            for (int k = 0; k < bytes.size(); k++) {
             for (int i = 0; i < levelSize; i++) {
                 for (int j = 0; j < levelSize; j++) {
                     float x = j;
                     float y = -i + levelSize - 2.0;
-                    if (bytes[i * levelSize + j] == '1'){
-                    this->objects.push_back(Object({(float) x ,(float) y,0.0f},{1.0f,1.0f,1.0f}, models["cube"]));
-                    this->objects.push_back(Object({(float) x ,(float) y,1.0f},{1.0f,1.0f,1.0f}, models["cube"]));
-                    this->objects.push_back(Object({(float) x ,(float) y,-1.0f},{1.0f,1.0f,1.0f}, models["cube"]));
+                    float z = 0.0;
+                    if (k == 0) {
+                       z = -1; 
+                    } 
+                    if (k == 1) {
+                        z = 0;
                     }
-                    if (bytes[i * levelSize + j] == 'f') {
-                        Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,0.0f},{1.0f,0.5f,0.1f}, 1.0f, textures["roboant"]);
-                        entity.left();
-                        this->entities.push_back(entity);
+                    if (k == 2) {
+                        z = 1;
+                    } 
+
+                    if (bytes[k][i * levelSize + j] == '1'){
+                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, models["cube"]));
+                        }
+                        if (bytes[k][i * levelSize + j] == 'f') {
+                            Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, textures["roboant"]);
+                            entity.left();
+                            this->entities.push_back(entity);
 
 
-                    }
+                        }
 
                 }
             }
-            file.close();
+        }
         }
     vector<Object> getObjects();
     vector<Entity> getEntities();
