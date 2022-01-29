@@ -58,6 +58,16 @@ void Entity::right() {
     if (!blockedRight)
     this->vpos.x = this->speed;
 }
+void Entity::forward() {
+    if (this->pos.z < 1) { 
+        this->pos.z += 1.0;
+    }
+}
+void Entity::back() {
+    if (this->pos.z > -1) {
+        this->pos.z -= 1.0;
+    }
+}
 void Entity::stopX() {
     this->vpos.x = 0.0f;
 }
@@ -90,7 +100,7 @@ void Entity::collision_object(Object object) {
     float oLeftX = object.getPos().x - object.getDim().x;
     float oTopY = object.getPos().y + object.getDim().y;
     float oBottomY = object.getPos().y - object.getDim().y;
-    
+    if (this->pos.z == object.getPos().z) { 
     if (eBottomY  <= oTopY
             && eBottomY >= object.getPos().y
             && ePosX > object.getPos().x - 0.2 
@@ -139,6 +149,8 @@ void Entity::collision_object(Object object) {
 
         }
     }
+
+    }
 }
 void Entity::collision_entity(Entity& otherEntity) {
     float ePosX = this->pos.x+this->vpos.x;
@@ -153,6 +165,7 @@ void Entity::collision_entity(Entity& otherEntity) {
     float oTopY = otherEntity.getPos().y + otherEntity.getDim().y;
     float oBottomY = otherEntity.getPos().y - otherEntity.getDim().y;
     
+    if (this->pos.z == otherEntity.getPos().z) { 
     if (eBottomY  <= oTopY
             && eBottomY >= otherEntity.getPos().y
             && ePosX > otherEntity.getPos().x - 0.2 
@@ -201,6 +214,8 @@ void Entity::collision_entity(Entity& otherEntity) {
         if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
             this->damage();
         }
+    }
+
     }
 }
 void Entity::render(Camera camera) {

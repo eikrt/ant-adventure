@@ -6,7 +6,7 @@
 #include <time.h>
 #include <random>
 using namespace std;
-#define ENTITYDIST 100.0f
+#define ENTITYDIST 128.0f
 
 vector<Entity> generate(vector<Entity> entities, map<string, Texture2D> textures) {
         random_device rd;
@@ -18,7 +18,7 @@ vector<Entity> generate(vector<Entity> entities, map<string, Texture2D> textures
                 float offsetZ = distr(gen);
                 if (perlin2d(i,j,0.1,1) > 0.8f) {
                     
-                        entities.push_back(Entity(rand(), "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,0.0f,(float)j - ENTITYDIST + offsetZ},{0.4f,0.25f,0.1f}, 1.0f, textures["spruce"]));
+                        entities.push_back(Entity(rand(), "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,0.0f,(float) j - ENTITYDIST - offsetZ},{0.4f,0.25f,0.1f}, 1.0f, textures["spruce"]));
                 }
             }
         }

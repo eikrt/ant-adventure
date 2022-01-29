@@ -29,9 +29,12 @@ class Level {
             for (int i = 0; i < levelSize; i++) {
                 for (int j = 0; j < levelSize; j++) {
                     float x = j;
-                    float y = -i + levelSize;
-                    if (bytes[i * levelSize + j] == '1')
+                    float y = -i + levelSize - 2.0;
+                    if (bytes[i * levelSize + j] == '1'){
                     this->objects.push_back(Object({(float) x ,(float) y,0.0f},{1.0f,1.0f,1.0f}, models["cube"]));
+                    this->objects.push_back(Object({(float) x ,(float) y,1.0f},{1.0f,1.0f,1.0f}, models["cube"]));
+                    this->objects.push_back(Object({(float) x ,(float) y,-1.0f},{1.0f,1.0f,1.0f}, models["cube"]));
+                    }
                     if (bytes[i * levelSize + j] == 'f') {
                         Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,0.0f},{1.0f,0.5f,0.1f}, 1.0f, textures["roboant"]);
                         entity.left();

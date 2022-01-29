@@ -32,10 +32,10 @@ int main(int argc, char* argv[])
 
     // physics
     Camera camera = {
-            .position = {0.0f, 5.0f, 80.0f},
+            .position = {0.0f, 8.0f, 20.0f},
             .target   = {0.0f, 6.0f, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
-            .fovy     = 10.0f,
+            .fovy     = 50.0f,
     };
     int selectedButton = 0;
     map<string, Model> models;
@@ -187,6 +187,12 @@ int main(int argc, char* argv[])
                 player.left();
             if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
                 player.slowX();
+            if (IsKeyPressed(KEY_W)) {
+                player.back();
+            }
+            if (IsKeyPressed(KEY_S)) {
+                player.forward();
+            }
             BeginMode3D(camera);
                 for (auto &obj : levels[currentLevel].getObjects()) {
 

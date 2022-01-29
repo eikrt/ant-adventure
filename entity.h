@@ -51,6 +51,8 @@ class Entity {
     void shortJump();
     void left();
     void right();
+    void forward();
+    void back();
     void stopX();
     void slowX();
     void stopY();
