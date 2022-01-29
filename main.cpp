@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
     models["ground"] = LoadModel("models/scenery.obj");
 
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
+    textures["roboant"] = LoadTexture("res/mechant.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
     textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
     textures["grass"] = LoadTexture("res/grass.png");
@@ -61,13 +62,13 @@ int main(int argc, char* argv[])
     gameOverButtons.push_back(Button({32.0, 32.0}, buttonTextures));
     models["cube"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
-    Entity player(0, "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
+    Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
     vector<Level> levels;
     levels.push_back(Level("levels/level_0", models, textures));
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
-    float gravity = 0.01f;
+    float gravity = 0.008f;
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     while (!WindowShouldClose())
     {

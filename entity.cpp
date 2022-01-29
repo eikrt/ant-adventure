@@ -121,7 +121,7 @@ void Entity::collision_object(Object object) {
     {
         blockedRight = true;
         this->stopX();
-        if (string(this->type) == "fungus" ){
+        if (string(this->type) == "roboant" ){
             this->left();
 
         }
@@ -134,7 +134,7 @@ void Entity::collision_object(Object object) {
     {
         blockedLeft = true;
         this->stopX();
-        if (string(this->type) == "fungus" ){
+        if (string(this->type) == "roboant" ){
             this->right();
 
         }
@@ -185,7 +185,8 @@ void Entity::collision_entity(Entity& otherEntity) {
     {
         blockedRight = true;
         this->stopX();
-        if (string(this->type) == "player" && string(otherEntity.type) == "fungus") {
+        if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
+            
             this->damage();
         }
     }
@@ -197,7 +198,7 @@ void Entity::collision_entity(Entity& otherEntity) {
     {
         blockedLeft = true;
         this->stopX();
-        if (string(this->type) == "player" && string(otherEntity.type) == "fungus") {
+        if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
             this->damage();
         }
     }

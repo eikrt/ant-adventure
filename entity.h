@@ -18,9 +18,10 @@ class Entity {
         float scale;
         int hp = 1;
         int id;
-        const char* type;
     public: 
-    Entity(int id, const char* type, float speed, Vector3 pos, Vector3 dim, float scale, Texture2D tex) {
+        const char* type;
+        const char* category;
+    Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, Texture2D tex) {
         this->pos = pos;
         this->tex = tex;
         this->dim = dim;
@@ -30,6 +31,7 @@ class Entity {
         this->hp = 1;
         this->id = id;
         this->type = type;
+        this->category = category;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
