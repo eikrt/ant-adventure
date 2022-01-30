@@ -16,6 +16,7 @@ class Level {
     public:
         vector<Object> objects; 
         vector<Entity> entities; 
+        Vector3 startPos;
         Level(string path, map<string,Model> models, map<string, Texture2D> textures) {
             vector<vector<char>> bytes;
             bytes.push_back(vector<char>());
@@ -48,7 +49,6 @@ class Level {
                     if (k == 2) {
                         z = 1;
                     } 
-
                     if (bytes[k][i * levelSize + j] == '1'){
                         this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, models["cube_0"]));
                         }
@@ -68,6 +68,9 @@ class Level {
                             this->entities.push_back(entity);
 
 
+                        }
+                        if (bytes[k][i * levelSize + j] == 'p') {
+                            this->startPos = {x,y+1.0,z};
                         }
 
                 }

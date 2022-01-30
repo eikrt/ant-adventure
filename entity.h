@@ -8,9 +8,6 @@
 using namespace std;
 class Entity {
     protected: 
-        Vector3 pos;
-        Vector3 vpos;
-        Vector3 dim;
         vector<Texture2D> texs;
         bool blockedLeft;
         bool blockedRight;
@@ -21,6 +18,9 @@ class Entity {
         int hp = 1;
         int id;
     public: 
+        Vector3 pos;
+        Vector3 vpos;
+        Vector3 dim;
         const char* type;
         const char* category;
         string mode;

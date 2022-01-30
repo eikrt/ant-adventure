@@ -12,6 +12,9 @@
 const float SCENEDIST =0.0f;
 #define WIDTH 640
 #define HEIGHT 420
+#define CAMERAY 8.0
+#define CAMERAZ 15.0
+#define TARGETY 6.0
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -32,8 +35,8 @@ int main(int argc, char* argv[])
 
     // physics
     Camera camera = {
-            .position = {0.0f, 8.0f, 15.0f},
-            .target   = {0.0f, 6.0f, 0.0f},
+            .position = {0.0f, CAMERAY, CAMERAZ},
+            .target   = {0.0f, TARGETY, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 50.0f,
     };
@@ -79,6 +82,12 @@ int main(int argc, char* argv[])
     Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
     vector<Level> levels;
     levels.push_back(Level("levels/level_0_", models, textures));
+    // start position
+    camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
+    camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
+    player.pos.x = levels[currentLevel].startPos.x;
+    player.pos.y = levels[currentLevel].startPos.y;
+    player.pos.z = levels[currentLevel].startPos.z;
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
@@ -148,14 +157,25 @@ int main(int argc, char* argv[])
 
             }
             else if (currentMode == game) {
-            if (player.getPos().x - camera.position.x > 10.0) {
+            float cameraW = 10.0f;
+            float cameraH = 6.0f;
+            if (player.getPos().x - camera.position.x > cameraW) {
             
-                camera.position.x = player.getPos().x + 10;
-                camera.target.x = player.getPos().x + 10;
+                camera.position.x = player.getPos().x + cameraW;
+                camera.target.x = player.getPos().x + cameraW;
             }
-            else if (player.getPos().x - camera.position.x < -10.0) {
-                camera.position.x = player.getPos().x - 10;
-                camera.target.x = player.getPos().x - 10;
+            else if (player.getPos().x - camera.position.x < -cameraW) {
+                camera.position.x = player.getPos().x - cameraW;
+                camera.target.x = player.getPos().x - cameraW;
+            }
+            if (player.getPos().y - camera.position.x > cameraH) {
+            
+                camera.position.y = player.getPos().y + cameraH + CAMERAY;
+                camera.target.y = player.getPos().y + cameraH + CAMERAY;
+            }
+            else if (player.getPos().y - camera.position.y < -cameraH) {
+                camera.position.y = player.getPos().y - cameraH + CAMERAY;
+                camera.target.y = player.getPos().y - cameraH + CAMERAY;
             }
 
             player.tick(gravity);
