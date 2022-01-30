@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
     // physics
     Camera camera = {
-            .position = {0.0f, 8.0f, 20.0f},
+            .position = {0.0f, 8.0f, 15.0f},
             .target   = {0.0f, 6.0f, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 50.0f,
@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
     textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
+    textures["egg"] = LoadTexture("res/ant_egg_4.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -71,7 +72,10 @@ int main(int argc, char* argv[])
     models["cube_1"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["cube_2"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
-    Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, textures["player"]);
+    vector<Texture2D> texs;
+    texs.push_back(textures["player"]);
+    texs.push_back(textures["egg"]);
+    Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
     vector<Level> levels;
     levels.push_back(Level("levels/level_0_", models, textures));
     vector<Scenery> scenes;
@@ -104,7 +108,6 @@ int main(int argc, char* argv[])
                         currentMode = game;
                     }
                 }
-            BeginTextureMode(target);
             BeginDrawing();
                 ClearBackground(RAYWHITE);
                 mainMenuButtons[selectedButton].selected = true;
@@ -114,7 +117,6 @@ int main(int argc, char* argv[])
                     b.tick();
                 }
                 EndDrawing();
-                EndTextureMode();
             }
             else if (currentMode == gameOver) {
                 if (IsKeyDown(KEY_DOWN)) {
@@ -133,7 +135,6 @@ int main(int argc, char* argv[])
                         exit(0);
                     }
                 }
-            BeginTextureMode(target);
             BeginDrawing();
                 ClearBackground(RAYWHITE);
                 gameOverButtons[selectedButton].selected = true;
@@ -143,7 +144,6 @@ int main(int argc, char* argv[])
                     b.tick();
                 }
                 EndDrawing();
-                EndTextureMode();
 
             }
             else if (currentMode == game) {
@@ -193,15 +193,37 @@ int main(int argc, char* argv[])
             {
                 ClearBackground(SKYBLUE);
 
-                if (IsKeyDown(KEY_SPACE))
-                    player.jump();
+                if (IsKeyPressed(KEY_SPACE)) {
+                    if (player.mode == string("normal")) {
+                        player.jump();
 
-                if (IsKeyDown(KEY_D))
-                    player.right();
-                if (IsKeyDown(KEY_A))
-                    player.left();
-                if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
+                    } else if (player.mode == string("jump")) {
+                        player.cannon();
+                    }
+                    else if (player.mode == string("cannon")) {
+                        player.launch();
+                    }
+                }
+                if (IsKeyDown(KEY_D)){
+                    if (player.mode == string("jump") || player.mode == string("normal"))
+                        player.right();
+                }
+                if (IsKeyDown(KEY_A)) {
+                    if(player.mode == string("jump") || player.mode == string("normal")) 
+                        player.left();
+                }
+                if (IsKeyPressed(KEY_A)){
+                    if(player.mode == string("cannon")) 
+                        player.tilt(3.14/4);
+                }
+                if (IsKeyPressed(KEY_D)) {
+                    if(player.mode == string("cannon")) 
+                        player.tilt(-3.14/4);
+                }
+                if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D)){
+                    if (player.mode == string("normal") || (player.mode == string("jump")))
                     player.slowX();
+                }
                 if (IsKeyPressed(KEY_W)) {
                     player.back();
                 }

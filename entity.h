@@ -2,14 +2,16 @@
 #define ENTITY_H
 #include <raylib.h>
 #include <string>
+#include <vector>
 #include "entity.h"
 #include "object.h"
+using namespace std;
 class Entity {
     protected: 
         Vector3 pos;
         Vector3 vpos;
         Vector3 dim;
-        Texture2D tex;
+        vector<Texture2D> texs;
         bool blockedLeft;
         bool blockedRight;
         bool blockedDown;
@@ -21,9 +23,12 @@ class Entity {
     public: 
         const char* type;
         const char* category;
-    Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, Texture2D tex) {
+        string mode;
+        float rot;
+        float launchSpeed;
+    Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
-        this->tex = tex;
+        this->texs = texs;
         this->dim = dim;
         this->scale = scale;
         this->vpos = {0.0f,0.0f,0.0f};
@@ -32,6 +37,9 @@ class Entity {
         this->id = id;
         this->type = type;
         this->category = category;
+        this->mode = "normal";
+        this->rot = 0.0;
+        this->launchSpeed = 7.0f;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
@@ -48,7 +56,10 @@ class Entity {
     void collision_entity(Entity& otherEntity);
     void damage();
     void jump();
+    void cannon();
+    void launch();
     void shortJump();
+    void tilt(float t);
     void left();
     void right();
     void forward();

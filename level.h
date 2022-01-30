@@ -53,7 +53,9 @@ class Level {
                         this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, models["cube_0"]));
                         }
                         if (bytes[k][i * levelSize + j] == 'f') {
-                            Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, textures["roboant"]);
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["roboant"]);
+                            Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.left();
                             this->entities.push_back(entity);
 

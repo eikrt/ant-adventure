@@ -1,4 +1,4 @@
-
+#include "math.h"
 #include "entity.h"
 #include <raylib.h>
 #include <iostream>
@@ -24,7 +24,7 @@ void Entity::damage() {
     this->hp -= 1;
 }
 void Entity::tick(float gravity) {
-    if (!this->blockedDown) {
+    if (!this->blockedDown && this->mode != string("cannon")) {
     this->vpos.y -= gravity;
         this->pos.y += this->vpos.y;
     }
@@ -40,22 +40,34 @@ void Entity::tick(float gravity) {
 }
 void Entity::jump() {
     if (blockedDown) {
+        this->mode = string("jump");
         this->vpos.y = JUMP_STRENGTH;
     }
 }
 void Entity::shortJump() {
     if (blockedDown) {
+        this->mode = string("jump");
         this->vpos.y = JUMP_STRENGTH / 2;
     }
 }
+void Entity::cannon() {
+    this->mode = string("cannon");
+    this->rot = 3.14/2;
+    this->stopX();
+}
+void Entity::launch() {
+    this->mode = string("flying");
+    this->vpos.x += cos(this->rot) / 50 * this->launchSpeed;
+    this->vpos.y += sin(this->rot)/ 50 * this->launchSpeed;
+}
 void Entity::left() {
     blockedRight = false;
-    if (!blockedLeft)
+    if (!blockedLeft && this->mode != string("cannon"))
     this->vpos.x = -this->speed;
 }
 void Entity::right() {
     blockedLeft = false;
-    if (!blockedRight)
+    if (!blockedRight && this->mode != string("cannon"))
     this->vpos.x = this->speed;
 }
 void Entity::forward() {
@@ -73,6 +85,7 @@ void Entity::stopX() {
 }
 void Entity::stopY() {
     this->vpos.y = 0.0f;
+    this->mode = string("normal");
 }
 void Entity::stopZ() {
     this->vpos.z = 0.0f;
@@ -87,6 +100,9 @@ void Entity::slowX() {
     else {
         this->stopX();
     }
+}
+void Entity::tilt(float t) {
+    this->rot += t;
 }
 void Entity::collision_object(Object object) {
     float ePosX = this->pos.x+this->vpos.x;
@@ -219,6 +235,16 @@ void Entity::collision_entity(Entity& otherEntity) {
     }
 }
 void Entity::render(Camera camera) {
-            DrawBillboard(camera,this->tex,{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
-
+            if (mode == string("normal")) {
+                DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
+            else if (mode == string("jump")) {
+                DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
+            else if (mode == string("flying")) {
+                DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
+            else if (mode == string("cannon")) {
+                DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
 }
