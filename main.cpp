@@ -16,7 +16,16 @@ const float SCENEDIST =0.0f;
 #define CAMERAZ 15.0
 #define TARGETY 6.0
 using namespace std;
+void startLevel(Camera& camera, Entity& player, vector<Level> levels, int currentLevel) {
+    camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
+    camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
+    player.hp = 1;
+    player.pos.x = levels[currentLevel].startPos.x;
+    player.pos.y = levels[currentLevel].startPos.y;
+    player.pos.z = levels[currentLevel].startPos.z;
+     
 
+}
 int main(int argc, char* argv[])
 {
     enum Mode {overworld, game, mainMenu, gameOver};
@@ -71,9 +80,11 @@ int main(int argc, char* argv[])
     buttonTextures.push_back(textures["mainMenuButton1"]);
     buttonTextures.push_back(textures["mainMenuButton2"]);
     vector<Button> mainMenuButtons;
-    mainMenuButtons.push_back(Button({32.0, 32.0}, buttonTextures));
+    mainMenuButtons.push_back(Button({32.0, 64.0},"Play", fonts[0], buttonTextures));
+    mainMenuButtons.push_back(Button({32.0, 110.0},"Quit", fonts[0], buttonTextures));
     vector<Button> gameOverButtons;
-    gameOverButtons.push_back(Button({32.0, 32.0}, buttonTextures));
+    gameOverButtons.push_back(Button({32.0, 64.0},"Continue", fonts[0], buttonTextures));
+    gameOverButtons.push_back(Button({32.0, 120.0},"Quit", fonts[0], buttonTextures));
     models["cube_0"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["cube_1"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
     models["cube_2"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
@@ -83,16 +94,14 @@ int main(int argc, char* argv[])
     texs.push_back(textures["egg"]);
     Entity player(0, 0.008, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
     int currentLevel = 2;
+    // levels
     vector<Level> levels;
     levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
+    startLevel(camera, player, levels, currentLevel);
     // start position
-    camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
-    camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
-    player.pos.x = levels[currentLevel].startPos.x;
-    player.pos.y = levels[currentLevel].startPos.y;
-    player.pos.z = levels[currentLevel].startPos.z;
+    
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
@@ -123,13 +132,14 @@ int main(int argc, char* argv[])
                     }
                 }
             BeginDrawing();
-                ClearBackground(RAYWHITE);
+                ClearBackground(BROWN);
                 mainMenuButtons[selectedButton].selected = true;
                 for (auto& b : mainMenuButtons) {
 
                     b.render(camera);
                     b.tick();
                 }
+                DrawTextEx(fonts[0], "Ant Adventure", {16,16},18, 2, {255,255,255, 255});
                 EndDrawing();
             }
             else if (currentMode == gameOver) {
@@ -184,7 +194,8 @@ int main(int argc, char* argv[])
 
             player.tick();
             if (player.getHp() <= 0) {
-                currentMode = gameOver;
+                startLevel(camera,player,levels,currentLevel);
+                levelAlpha = 255; 
             }
 
             for (auto &e : levels[currentLevel].entities) {

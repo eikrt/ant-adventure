@@ -7,7 +7,7 @@
 #include "object.h"
 using namespace std;
 class Entity {
-    protected: 
+    public: 
         vector<Texture2D> texs;
         bool blockedLeft;
         bool blockedRight;
@@ -17,7 +17,6 @@ class Entity {
         float scale;
         int hp = 1;
         int id;
-    public: 
         Vector3 pos;
         Vector3 vpos;
         Vector3 dim;
