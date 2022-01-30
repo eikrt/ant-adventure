@@ -61,6 +61,9 @@ int main(int argc, char* argv[])
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     textures["egg"] = LoadTexture("res/ant_egg_4.png");
     textures["coin"] = LoadTexture("res/leaf.png");
+    textures["valuable_coin"] = LoadTexture("res/autumn_leaf.png");
+    textures["treasure"] = LoadTexture("res/holy_object.png");
+    textures["token"] = LoadTexture("res/rock.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -79,7 +82,7 @@ int main(int argc, char* argv[])
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
     texs.push_back(textures["egg"]);
-    Entity player(0, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
+    Entity player(0, 0.008, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
     vector<Level> levels;
     levels.push_back(Level("levels/level_0_", models, textures));
     // start position
@@ -91,7 +94,6 @@ int main(int argc, char* argv[])
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
-    float gravity = 0.008f;
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
 
     // shaders
@@ -170,15 +172,15 @@ int main(int argc, char* argv[])
             }
             if (player.getPos().y - camera.position.x > cameraH) {
             
-                camera.position.y = player.getPos().y + cameraH + CAMERAY;
-                camera.target.y = player.getPos().y + cameraH + CAMERAY;
+                camera.position.y = player.getPos().y - cameraH + CAMERAY;
+                camera.target.y = player.getPos().y - cameraH + CAMERAY;
             }
             else if (player.getPos().y - camera.position.y < -cameraH) {
                 camera.position.y = player.getPos().y - cameraH + CAMERAY;
                 camera.target.y = player.getPos().y - cameraH + CAMERAY;
             }
 
-            player.tick(gravity);
+            player.tick();
             if (player.getHp() <= 0) {
                 currentMode = gameOver;
             }
@@ -194,7 +196,7 @@ int main(int argc, char* argv[])
                     }
                     e.collision_object(obj);
                 }
-                e.tick(gravity);
+                e.tick();
             }
             for (auto &obj : levels[currentLevel].getObjects()) {
                 if (obj.getHp() <= 0) {

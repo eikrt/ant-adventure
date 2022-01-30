@@ -55,7 +55,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'f') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["roboant"]);
-                            Entity entity = Entity(rand(), "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.left();
                             this->entities.push_back(entity);
 
@@ -64,7 +64,31 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'c') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["coin"]);
-                            Entity entity = Entity(rand(), "collectible", "coin", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "coin", "collectible", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == 'v') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["valuable_coin"]);
+                            Entity entity = Entity(rand(), 0, "valuable_coin", "collectible", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == 't') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["treasure"]);
+                            Entity entity = Entity(rand(), 0,"treasure", "collectible",0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == 'o') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["token"]);
+                            Entity entity = Entity(rand(), 0, "token", "collectible", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 

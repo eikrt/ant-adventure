@@ -20,7 +20,7 @@ vector<Entity> generate(vector<Entity> entities, map<string, Texture2D> textures
                     
                         vector<Texture2D> texs;
                         texs.push_back(textures["spruce"]);
-                        entities.push_back(Entity(rand(), "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,0.0f,(float) j - ENTITYDIST - offsetZ},{0.4f,0.25f,0.1f}, 1.0f, texs));
+                        entities.push_back(Entity(rand(), 0, "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,0.0f,(float) j - ENTITYDIST - offsetZ},{0.4f,0.25f,0.1f}, 1.0f, texs));
                 }
             }
         }

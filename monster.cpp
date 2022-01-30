@@ -2,8 +2,8 @@
 #include "entity.h"
 #include <iostream> 
 using namespace std;
-void Monster::tick(float gravity) {
-    Entity::tick(gravity);
+void Monster::tick() {
+    Entity::tick();
     if (this->type == "fungus") {
     }
 }

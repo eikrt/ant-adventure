@@ -29,7 +29,8 @@ class Entity {
         float cannonTime;
         float launchSpeed;
         int coins;
-    Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
+        float gravity;
+    Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
         this->texs = texs;
         this->dim = dim;
@@ -46,13 +47,14 @@ class Entity {
         this->cannonTime = 500;
         this->cannonChange = 0;
         this->coins = 0;
+        this-> gravity = gravity;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
         blockedUp = false;
     }
     void render(Camera camera);
-    void tick(float gravity);
+    void tick();
     Vector3 getPos();
     Vector3 getVpos();
     Vector3 getDim();
@@ -64,7 +66,8 @@ class Entity {
     void jump();
     void cannon();
     void launch();
-    void collectCoin();
+    void collectCoin(int value);
+    void collisionAction(Entity& otherEntity, const char* dir);
     void shortJump();
     void tilt(float t);
     void left();

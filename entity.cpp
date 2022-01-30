@@ -23,10 +23,10 @@ int Entity::getId() {
 void Entity::damage() {
     this->hp -= 1;
 }
-void Entity::collectCoin() {
-    this->coins += 1;
+void Entity::collectCoin(int value) {
+    this->coins += value;
 }
-void Entity::tick(float gravity) {
+void Entity::tick(){
     if (this->mode == string("cannon")) {
         this->cannonChange += 10;
         if (this->cannonChange > this->cannonTime) {
@@ -35,7 +35,7 @@ void Entity::tick(float gravity) {
         }
     }
     if (!this->blockedDown && this->mode != string("cannon")) {
-    this->vpos.y -= gravity;
+    this->vpos.y -= this->gravity;
         this->pos.y += this->vpos.y;
     }
     if (!(this->blockedRight && this->blockedLeft)) {
@@ -198,31 +198,19 @@ void Entity::collision_entity(Entity& otherEntity) {
             && ePosX > otherEntity.getPos().x - 0.2 
             && ePosX < oRightX) {
         blockedDown = true;
-        if (eBottomY > otherEntity.getPos().y + otherEntity.getDim().y) {
-        
-            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
-        }
-        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
-            this->collectCoin();
+        this->collisionAction(otherEntity, "up");
+        if (otherEntity.category == string("enemy")) {
             otherEntity.damage();
+            this->stopY();
+            this->jump();
         }
-        otherEntity.damage();
-        this->stopY();
-        this->jump();
     }
     if (eTopY  <= oTopY
             && eTopY >= otherEntity.getPos().y
             && ePosX > otherEntity.getPos().x - 0.2 
             && ePosX < oRightX) {
         blockedUp = true;
-        if (eBottomY > otherEntity.getPos().y + otherEntity.getDim().y) {
-        
-            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
-        }
-        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
-            this->collectCoin();
-            otherEntity.damage();
-        }
+        this->collisionAction(otherEntity, "down");
         this->vpos.y = BOUNCE;
     }
     if (
@@ -233,14 +221,7 @@ void Entity::collision_entity(Entity& otherEntity) {
     {
         blockedRight = true;
         this->stopX();
-        if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
-            
-            this->damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
-            this->collectCoin();
-            otherEntity.damage();
-        }
+        this->collisionAction(otherEntity, "side");
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -248,18 +229,34 @@ void Entity::collision_entity(Entity& otherEntity) {
             eLeftX >= otherEntity.getPos().x &&
             eLeftX <= oRightX)
     {
+        this->collisionAction(otherEntity, "side");
         blockedLeft = true;
         this->stopX();
-        if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
-            this->damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
-            this->collectCoin();
-            otherEntity.damage();
-        }
     }
 
     }
+}
+void Entity::collisionAction(Entity& otherEntity, const char* dir) {
+
+        if (dir != "up" && string(this->type) == "player" && string(otherEntity.category) == "enemy") {
+            this->damage();
+        }
+        if (string(this->type) == "player" && string(otherEntity.type) == "coin") {
+            this->collectCoin(1);
+            otherEntity.damage();
+        }
+        if (string(this->type) == "player" && string(otherEntity.type) == "valuable_coin") {
+            this->collectCoin(5);
+            otherEntity.damage();
+        }
+        if (string(this->type) == "player" && string(otherEntity.type) == "token") {
+            this->collectCoin(5);
+            otherEntity.damage();
+        }
+        if (string(this->type) == "player" && string(otherEntity.type) == "treasure") {
+            this->collectCoin(5);
+            otherEntity.damage();
+        }
 }
 void Entity::render(Camera camera) {
             if (mode == string("normal")) {
