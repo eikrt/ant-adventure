@@ -27,6 +27,9 @@ void Entity::collectCoin(int value) {
     this->coins += value;
 }
 void Entity::tick(){
+    if (this->pos.y < 0) {
+        this->damage();
+    }
     if (this->mode == string("cannon")) {
         this->cannonChange += 10;
         if (this->cannonChange > this->cannonTime) {

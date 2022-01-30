@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
     Mode currentMode = mainMenu;
     const int screenWidth = 1024;
     const int screenHeight = 576;
-    int currentLevel = 0;
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
 
     InitWindow(screenWidth, screenHeight, "Ant Adventure");
@@ -83,8 +82,11 @@ int main(int argc, char* argv[])
     texs.push_back(textures["player"]);
     texs.push_back(textures["egg"]);
     Entity player(0, 0.008, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
+    int currentLevel = 2;
     vector<Level> levels;
-    levels.push_back(Level("levels/level_0_", models, textures));
+    levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
+    levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
+    levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
     // start position
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
     camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
@@ -286,7 +288,7 @@ int main(int argc, char* argv[])
             }
             // level texts
             if (levelAlpha > 0) {
-            DrawTextEx(fonts[0], "Ruins", {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
+            DrawTextEx(fonts[0], levels[currentLevel].title.c_str(), {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
             }
             // hud
             DrawTextEx(fonts[0], (string("Leafs: ") + to_string(player.coins)).c_str(), {screenWidth - 90,screenHeight - 16},18, 2, {255,255,255, 255});

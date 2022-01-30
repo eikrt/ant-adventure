@@ -17,11 +17,13 @@ class Level {
         vector<Object> objects; 
         vector<Entity> entities; 
         Vector3 startPos;
-        Level(string path, map<string,Model> models, map<string, Texture2D> textures) {
+        string title;
+        Level(string title, string path, map<string,Model> models, map<string, Texture2D> textures) {
             vector<vector<char>> bytes;
             bytes.push_back(vector<char>());
             bytes.push_back(vector<char>());
             bytes.push_back(vector<char>());
+            this->title = title;
             for (int i = 0; i < 3; i++) { 
                 char byte = 0;
                 ifstream file(path + to_string(i)); 
@@ -52,7 +54,7 @@ class Level {
                     if (bytes[k][i * levelSize + j] == '1'){
                         this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, models["cube_0"]));
                         }
-                        if (bytes[k][i * levelSize + j] == 'f') {
+                        if (bytes[k][i * levelSize + j] == 'r') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["roboant"]);
                             Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
