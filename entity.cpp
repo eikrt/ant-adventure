@@ -23,6 +23,9 @@ int Entity::getId() {
 void Entity::damage() {
     this->hp -= 1;
 }
+void Entity::collectCoin() {
+    this->coins += 1;
+}
 void Entity::tick(float gravity) {
     if (this->mode == string("cannon")) {
         this->cannonChange += 10;
@@ -199,6 +202,10 @@ void Entity::collision_entity(Entity& otherEntity) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
         }
+        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
+            this->collectCoin();
+            otherEntity.damage();
+        }
         otherEntity.damage();
         this->stopY();
         this->jump();
@@ -211,6 +218,10 @@ void Entity::collision_entity(Entity& otherEntity) {
         if (eBottomY > otherEntity.getPos().y + otherEntity.getDim().y) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - otherEntity.getPos().y + otherEntity.getDim().y);
+        }
+        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
+            this->collectCoin();
+            otherEntity.damage();
         }
         this->vpos.y = BOUNCE;
     }
@@ -226,6 +237,10 @@ void Entity::collision_entity(Entity& otherEntity) {
             
             this->damage();
         }
+        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
+            this->collectCoin();
+            otherEntity.damage();
+        }
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -237,6 +252,10 @@ void Entity::collision_entity(Entity& otherEntity) {
         this->stopX();
         if (string(this->type) == "player" && string(otherEntity.category) == "enemy") {
             this->damage();
+        }
+        if (string(this->type) == "player" && string(otherEntity.category) == "coin") {
+            this->collectCoin();
+            otherEntity.damage();
         }
     }
 

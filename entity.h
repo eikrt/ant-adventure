@@ -28,6 +28,7 @@ class Entity {
         float cannonChange;
         float cannonTime;
         float launchSpeed;
+        int coins;
     Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
         this->texs = texs;
@@ -44,6 +45,7 @@ class Entity {
         this->launchSpeed = 7.0f;
         this->cannonTime = 500;
         this->cannonChange = 0;
+        this->coins = 0;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
@@ -62,6 +64,7 @@ class Entity {
     void jump();
     void cannon();
     void launch();
+    void collectCoin();
     void shortJump();
     void tilt(float t);
     void left();

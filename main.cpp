@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     textures["egg"] = LoadTexture("res/ant_egg_4.png");
+    textures["coin"] = LoadTexture("res/leaf.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -254,7 +255,6 @@ int main(int argc, char* argv[])
 
         }
         BeginDrawing();
-            //DrawTextureRec(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT}, Vector2{0, 0}, WHITE);
             DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
             if (levelAlpha > 0) {
                 levelAlpha -= 2;
@@ -262,9 +262,12 @@ int main(int argc, char* argv[])
             else {
                 levelAlpha = 0;
             }
+            // level texts
             if (levelAlpha > 0) {
             DrawTextEx(fonts[0], "Ruins", {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
             }
+            // hud
+            DrawTextEx(fonts[0], (string("Leafs: ") + to_string(player.coins)).c_str(), {screenWidth - 90,screenHeight - 16},18, 2, {255,255,255, 255});
         EndDrawing();
     }
     }
