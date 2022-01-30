@@ -25,6 +25,8 @@ class Entity {
         const char* category;
         string mode;
         float rot;
+        float cannonChange;
+        float cannonTime;
         float launchSpeed;
     Entity(int id, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
@@ -40,6 +42,8 @@ class Entity {
         this->mode = "normal";
         this->rot = 0.0;
         this->launchSpeed = 7.0f;
+        this->cannonTime = 500;
+        this->cannonChange = 0;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;

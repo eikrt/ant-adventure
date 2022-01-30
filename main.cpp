@@ -253,7 +253,6 @@ int main(int argc, char* argv[])
             EndTextureMode();
 
         }
-    }
         BeginDrawing();
             //DrawTextureRec(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT}, Vector2{0, 0}, WHITE);
             DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
@@ -267,6 +266,7 @@ int main(int argc, char* argv[])
             DrawTextEx(fonts[0], "Ruins", {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
             }
         EndDrawing();
+    }
     }
     
 

@@ -24,6 +24,13 @@ void Entity::damage() {
     this->hp -= 1;
 }
 void Entity::tick(float gravity) {
+    if (this->mode == string("cannon")) {
+        this->cannonChange += 10;
+        if (this->cannonChange > this->cannonTime) {
+            this-> cannonChange = 0;
+            this->launch();
+        }
+    }
     if (!this->blockedDown && this->mode != string("cannon")) {
     this->vpos.y -= gravity;
         this->pos.y += this->vpos.y;
@@ -56,6 +63,7 @@ void Entity::cannon() {
     this->stopX();
 }
 void Entity::launch() {
+    this->cannonChange = 0;
     this->mode = string("flying");
     this->vpos.x += cos(this->rot) / 50 * this->launchSpeed;
     this->vpos.y += sin(this->rot)/ 50 * this->launchSpeed;
@@ -245,6 +253,7 @@ void Entity::render(Camera camera) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
             else if (mode == string("cannon")) {
+                DrawSphere({this->pos.x + cos(this->rot) * 1.0, this->pos.y + sin(this->rot) * 1.0, this->pos.z}, 0.1, RED);
                 DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
 }
