@@ -347,6 +347,8 @@ int main(int argc, char* argv[])
             }
             // hud
             DrawTextEx(fonts[0], (string("Leafs: ") + to_string(player.coins)).c_str(), {screenWidth - 90,screenHeight - 16},18, 2, {255,255,255, 255});
+            DrawTextEx(fonts[0], (string("Tokens: ") + to_string(player.tokens)).c_str(), {screenWidth - 200,screenHeight - 16},18, 2, {255,255,255, 255});
+            DrawTextEx(fonts[0], (string("Artifacts: ") + to_string(player.artifacts.size())).c_str(), {screenWidth - 325,screenHeight - 16},18, 2, {255,255,255, 255});
         EndDrawing();
     }
     }

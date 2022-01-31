@@ -268,11 +268,11 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
                 otherEntity.damage();
             }
             if (string(otherEntity.type) == "token") {
-                this->collectCoin(5);
+                this->tokens += 1;
                 otherEntity.damage();
             }
-            if (string(otherEntity.type) == "treasure") {
-                this->collectCoin(5);
+            if (string(otherEntity.category) == "artifact") {
+                this->artifacts.push_back(string(otherEntity.category));
                 otherEntity.damage();
             }
             if (string(otherEntity.type) == "ladder") {

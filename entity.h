@@ -28,6 +28,8 @@ class Entity {
         float cannonTime;
         float launchSpeed;
         int coins;
+        int tokens;
+        vector<string> artifacts;
         float gravity;
     Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
@@ -47,6 +49,7 @@ class Entity {
         this->cannonChange = 0;
         this->coins = 0;
         this-> gravity = gravity;
+        this->tokens = 0;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;
