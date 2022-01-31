@@ -95,6 +95,14 @@ class Level {
 
 
                         }
+                        if (bytes[k][i * levelSize + j] == 'l') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["ladder"]);
+                            Entity entity = Entity(rand(), 0, "ladder", "climbable", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
                         if (bytes[k][i * levelSize + j] == 'p') {
                             this->startPos = {x,y+1.0,z};
                         }

@@ -37,10 +37,10 @@ void Entity::tick(){
             this->launch();
         }
     }
-    if (!this->blockedDown && this->mode != string("cannon")) {
-    this->vpos.y -= this->gravity;
-        this->pos.y += this->vpos.y;
+    if (!this->blockedDown && (this->mode != string("cannon") && this->mode != string("ladder"))) {
+        this->vpos.y -= this->gravity;
     }
+        this->pos.y += this->vpos.y;
     if (!(this->blockedRight && this->blockedLeft)) {
         
     this->pos.x += this->vpos.x;
@@ -50,6 +50,9 @@ void Entity::tick(){
     this-> blockedLeft = false;
     this->blockedDown = false;
     this->blockedUp = false;
+    if (this->mode == string("ladder")) {
+        this->mode = string("normal");
+    }
 }
 void Entity::jump() {
     if (blockedDown) {
@@ -67,6 +70,7 @@ void Entity::cannon() {
     this->mode = string("cannon");
     this->rot = 3.14/2;
     this->stopX();
+    this->vpos.y = 0.0f;
 }
 void Entity::launch() {
     this->cannonChange = 0;
@@ -93,6 +97,12 @@ void Entity::back() {
     if (this->pos.z > -1) {
         this->pos.z -= 1.0;
     }
+}
+void Entity::down() {
+    this->vpos.y =-this->speed;
+}
+void Entity::up() {
+    this->vpos.y = this->speed;
 }
 void Entity::stopX() {
     this->vpos.x = 0.0f;
@@ -214,7 +224,6 @@ void Entity::collision_entity(Entity& otherEntity) {
             && ePosX < oRightX) {
         blockedUp = true;
         this->collisionAction(otherEntity, "down");
-        this->vpos.y = BOUNCE;
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -222,8 +231,6 @@ void Entity::collision_entity(Entity& otherEntity) {
             eRightX >= otherEntity.getPos().x &&
             eRightX <= oRightX)
     {
-        blockedRight = true;
-        this->stopX();
         this->collisionAction(otherEntity, "side");
     }
     if (
@@ -233,8 +240,6 @@ void Entity::collision_entity(Entity& otherEntity) {
             eLeftX <= oRightX)
     {
         this->collisionAction(otherEntity, "side");
-        blockedLeft = true;
-        this->stopX();
     }
 
     }
@@ -260,6 +265,9 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
             this->collectCoin(5);
             otherEntity.damage();
         }
+        if (string(this->type) == "player" && string(otherEntity.type) == "ladder") {
+            this->mode="ladder";
+        }
 }
 void Entity::render(Camera camera) {
             if (mode == string("normal")) {
@@ -269,6 +277,9 @@ void Entity::render(Camera camera) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
             else if (mode == string("flying")) {
+                DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
+            else if (mode == string("ladder")) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
             else if (mode == string("cannon")) {

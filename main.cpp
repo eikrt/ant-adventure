@@ -15,6 +15,7 @@ const float SCENEDIST =0.0f;
 #define CAMERAY 8.0
 #define CAMERAZ 15.0
 #define TARGETY 6.0
+const float SCREENMARGIN = 256.0;
 using namespace std;
 void startLevel(Camera& camera, Entity& player, vector<Level> levels, int currentLevel) {
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
@@ -72,6 +73,7 @@ int main(int argc, char* argv[])
     textures["valuable_coin"] = LoadTexture("res/autumn_leaf.png");
     textures["treasure"] = LoadTexture("res/holy_object.png");
     textures["token"] = LoadTexture("res/rock.png");
+    textures["ladder"] = LoadTexture("res/ladder.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -171,9 +173,9 @@ int main(int argc, char* argv[])
 
             }
             else if (currentMode == game) {
-            float cameraW = 10.0f;
+            float cameraW = 5.0f;
             float cameraH = 6.0f;
-            if (player.getPos().x - camera.position.x > cameraW) {
+           /* if (player.getPos().x - camera.position.x > cameraW) {
             
                 camera.position.x = player.getPos().x + cameraW;
                 camera.target.x = player.getPos().x + cameraW;
@@ -191,7 +193,25 @@ int main(int argc, char* argv[])
                 camera.position.y = player.getPos().y - cameraH + CAMERAY;
                 camera.target.y = player.getPos().y - cameraH + CAMERAY;
             }
-
+*/
+            if (GetWorldToScreen(player.pos, camera).x > screenWidth - SCREENMARGIN) {
+                camera.position.x = player.getPos().x ;
+                camera.target.x = player.getPos().x;
+            }
+            if (GetWorldToScreen(player.pos, camera).x < SCREENMARGIN) {
+                camera.position.x = player.getPos().x ;
+                camera.target.x = player.getPos().x;
+            }
+            if (GetWorldToScreen(player.pos, camera).y > screenHeight - SCREENMARGIN) {
+                camera.position.x = player.getPos().x ;
+                camera.target.x = player.getPos().x;
+            }
+            if (GetWorldToScreen(player.pos, camera).y < SCREENMARGIN) {
+                camera.position.x = player.getPos().x ;
+                camera.target.x = player.getPos().x;
+            }
+            camera.position.y = player.getPos().y;
+            camera.target.y = player.getPos().y;
             player.tick();
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels,currentLevel);
@@ -241,12 +261,34 @@ int main(int argc, char* argv[])
                     }
                 }
                 if (IsKeyDown(KEY_D)){
-                    if (player.mode == string("jump") || player.mode == string("normal"))
+                    if (player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder"))
                         player.right();
                 }
                 if (IsKeyDown(KEY_A)) {
-                    if(player.mode == string("jump") || player.mode == string("normal")) 
+                    if(player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder")) 
                         player.left();
+                }
+                if (IsKeyDown(KEY_W)) {
+                    if(player.mode == string("ladder")) {
+                        player.up();
+                    }
+                }
+                if (IsKeyReleased(KEY_W)) {
+                    if(player.mode == string("ladder")) {
+                        player.vpos.y = 0;
+                    }
+                    
+                }
+                if (IsKeyReleased(KEY_S)) {
+                    if(player.mode == string("ladder")) {
+                        player.vpos.y= 0;
+                    }
+                    
+                }
+                if (IsKeyDown(KEY_S)) {
+                    if(player.mode == string("ladder")) {
+                        player.down();
+                    }
                 }
                 if (IsKeyPressed(KEY_A)){
                     if(player.mode == string("cannon")) 
@@ -257,13 +299,13 @@ int main(int argc, char* argv[])
                         player.tilt(-3.14/4);
                 }
                 if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D)){
-                    if (player.mode == string("normal") || (player.mode == string("jump")))
+                    if (player.mode == string("normal") || (player.mode == string("jump") ||player.mode == string("ladder")))
                     player.slowX();
                 }
-                if (IsKeyPressed(KEY_W)) {
+                if (IsKeyPressed(KEY_X)) {
                     player.back();
                 }
-                if (IsKeyPressed(KEY_S)) {
+                if (IsKeyPressed(KEY_Z)) {
                     player.forward();
                 }
                 BeginMode3D(camera);

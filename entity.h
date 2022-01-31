@@ -42,7 +42,7 @@ class Entity {
         this->category = category;
         this->mode = "normal";
         this->rot = 0.0;
-        this->launchSpeed = 7.0f;
+        this->launchSpeed = 9.0f;
         this->cannonTime = 500;
         this->cannonChange = 0;
         this->coins = 0;
@@ -73,6 +73,8 @@ class Entity {
     void right();
     void forward();
     void back();
+    void up();
+    void down();
     void stopX();
     void slowX();
     void stopY();
