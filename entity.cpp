@@ -30,6 +30,11 @@ void Entity::tick(){
     if (this->pos.y < 0) {
         this->damage();
     }
+    if (this->type == string("bird")) {
+        this->rot += 3.14 / 64;
+        this->pos.x += cos(this->rot) / 10;
+        this->pos.y += sin(this->rot) / 10;
+    }
     if (this->mode == string("cannon")) {
         this->cannonChange += 10;
         if (this->cannonChange > this->cannonTime) {
@@ -37,9 +42,10 @@ void Entity::tick(){
             this->launch();
         }
     }
-    if (!this->blockedDown && (this->mode != string("cannon") && this->mode != string("ladder"))) {
+    if ( !this->blockedDown && (this->mode != string("cannon") && this->mode != string("ladder"))) {
         this->vpos.y -= this->gravity;
     }
+    if (this->type != string("bird"))
         this->pos.y += this->vpos.y;
     if (!(this->blockedRight && this->blockedLeft)) {
         

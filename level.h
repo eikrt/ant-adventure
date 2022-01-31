@@ -74,6 +74,14 @@ class Level {
 
 
                         }
+                        if (bytes[k][i * levelSize + j] == 'i') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["bird"]);
+                            Entity entity = Entity(rand(), 0.00, "bird", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
                         if (bytes[k][i * levelSize + j] == 'c') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["coin"]);
