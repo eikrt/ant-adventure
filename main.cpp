@@ -57,23 +57,25 @@ int main(int argc, char* argv[])
     int selectedButton = 0;
     map<string, Model> models;
     map<string, Texture2D> textures;
-    models["cube_0"] = LoadModel("models/cube.obj");
-    models["cube_1"] = LoadModel("models/cube.obj");
-    models["cube_2"] = LoadModel("models/cube.obj");
+    models["stone_brick_dark"] = LoadModel("models/cube.obj");
+    models["stone_brick_light"] = LoadModel("models/cube.obj");
     models["ground"] = LoadModel("models/scenery.obj");
 
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
     textures["roboant"] = LoadTexture("res/mechant.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
-    textures["stoneBrick"] = LoadTexture("res/stone_brick.png");
+    textures["stoneBrickDark"] = LoadTexture("res/stone_brick_dark.png");
+    textures["stoneBrickLight"] = LoadTexture("res/stone_brick_light.png");
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     textures["egg"] = LoadTexture("res/ant_egg_4.png");
     textures["coin"] = LoadTexture("res/leaf.png");
     textures["valuable_coin"] = LoadTexture("res/autumn_leaf.png");
-    textures["treasure"] = LoadTexture("res/holy_object.png");
+    textures["treasure"] = LoadTexture("res/diamond.png");
     textures["token"] = LoadTexture("res/rock.png");
     textures["ladder"] = LoadTexture("res/ladder.png");
+    textures["spike"] = LoadTexture("res/spikes.png");
+    textures["trampoline"] = LoadTexture("res/trampoline.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -87,9 +89,8 @@ int main(int argc, char* argv[])
     vector<Button> gameOverButtons;
     gameOverButtons.push_back(Button({32.0, 64.0},"Continue", fonts[0], buttonTextures));
     gameOverButtons.push_back(Button({32.0, 120.0},"Quit", fonts[0], buttonTextures));
-    models["cube_0"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
-    models["cube_1"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
-    models["cube_2"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrick"];
+    models["stone_brick_light"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrickLight"];
+    models["stone_brick_dark"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrickDark"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
@@ -113,7 +114,7 @@ int main(int argc, char* argv[])
         map<const char*, Shader> shaders;
         shaders["default"] = LoadShader(TextFormat("shaders/base_lightning.vs"), TextFormat("shaders/lightning.fs"));
         shaders["default"].locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shaders["default"], "viewPos");
-        models["cube_0"].materials[0].shader = shaders["default"];
+        //models["cube_0"].materials[0].shader = shaders["default"];
         while (!WindowShouldClose())
         {
             if (currentMode == mainMenu) {
@@ -251,7 +252,7 @@ int main(int argc, char* argv[])
 
                 if (IsKeyPressed(KEY_SPACE)) {
                     if (player.mode == string("normal")) {
-                        player.jump();
+                        player.jump(1.0);
 
                     } else if (player.mode == string("jump")) {
                         player.cannon();

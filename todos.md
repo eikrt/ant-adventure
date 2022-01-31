@@ -4,8 +4,9 @@ tausta x
 hahmon liike x
 slideys x
 parempi gameover x
-ladders 
-
+ladders
+piikit
+ansat
 
 ## Kenttädesign
 

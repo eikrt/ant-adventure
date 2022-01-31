@@ -26,3 +26,4 @@ vector<Entity> generate(vector<Entity> entities, map<string, Texture2D> textures
         }
         return entities;
 }
+

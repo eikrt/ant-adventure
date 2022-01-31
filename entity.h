@@ -62,12 +62,11 @@ class Entity {
     void collision_object(Object object);
     void collision_entity(Entity& otherEntity);
     void damage();
-    void jump();
+    void jump(float f);
     void cannon();
     void launch();
     void collectCoin(int value);
     void collisionAction(Entity& otherEntity, const char* dir);
-    void shortJump();
     void tilt(float t);
     void left();
     void right();

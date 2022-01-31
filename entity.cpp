@@ -54,16 +54,10 @@ void Entity::tick(){
         this->mode = string("normal");
     }
 }
-void Entity::jump() {
+void Entity::jump(float f) {
     if (blockedDown) {
         this->mode = string("jump");
-        this->vpos.y = JUMP_STRENGTH;
-    }
-}
-void Entity::shortJump() {
-    if (blockedDown) {
-        this->mode = string("jump");
-        this->vpos.y = JUMP_STRENGTH / 2;
+        this->vpos.y = JUMP_STRENGTH * f;
     }
 }
 void Entity::cannon() {
@@ -141,7 +135,7 @@ void Entity::collision_object(Object object) {
     float oTopY = object.getPos().y + object.getDim().y;
     float oBottomY = object.getPos().y - object.getDim().y;
     if (this->pos.z == object.getPos().z) { 
-    if (eBottomY  <= oTopY
+    if (vpos.y <= 0 && eBottomY  <= oTopY
             && eBottomY >= object.getPos().y
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
@@ -156,12 +150,15 @@ void Entity::collision_object(Object object) {
             && eTopY >= object.getPos().y
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
+        if (object.type == string("cube")) {
         blockedUp = true;
         if (eBottomY > object.getPos().y + object.getDim().y) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
         }
         this->vpos.y = -0.1f;
+
+        }
     }
     if (
             eBottomY + 0.1 > object.getPos().y &&
@@ -215,7 +212,7 @@ void Entity::collision_entity(Entity& otherEntity) {
         if (otherEntity.category == string("enemy")) {
             otherEntity.damage();
             this->stopY();
-            this->jump();
+            this->jump(0.5f);
         }
     }
     if (eTopY  <= oTopY
@@ -246,28 +243,37 @@ void Entity::collision_entity(Entity& otherEntity) {
 }
 void Entity::collisionAction(Entity& otherEntity, const char* dir) {
 
-        if (dir != "up" && string(this->type) == "player" && string(otherEntity.category) == "enemy") {
-            this->damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.type) == "coin") {
-            this->collectCoin(1);
-            otherEntity.damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.type) == "valuable_coin") {
-            this->collectCoin(5);
-            otherEntity.damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.type) == "token") {
-            this->collectCoin(5);
-            otherEntity.damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.type) == "treasure") {
-            this->collectCoin(5);
-            otherEntity.damage();
-        }
-        if (string(this->type) == "player" && string(otherEntity.type) == "ladder") {
-            this->mode="ladder";
-        }
+        if (this->type == string("player")) {
+            if (dir != "up" && string(otherEntity.category) == "enemy") {
+                this->damage();
+            }
+            if (dir == "up"&& string(otherEntity.type) == "spike") {
+                this->damage();
+            }
+            if (dir == "up" && string(otherEntity.type) == "trampoline") {
+                this->jump(2);
+            }
+            if (string(otherEntity.type) == "coin") {
+                this->collectCoin(1);
+                otherEntity.damage();
+            }
+            if (string(otherEntity.type) == "valuable_coin") {
+                this->collectCoin(5);
+                otherEntity.damage();
+            }
+            if (string(otherEntity.type) == "token") {
+                this->collectCoin(5);
+                otherEntity.damage();
+            }
+            if (string(otherEntity.type) == "treasure") {
+                this->collectCoin(5);
+                otherEntity.damage();
+            }
+            if (string(otherEntity.type) == "ladder") {
+                this->mode="ladder";
+            }
+
+            }
 }
 void Entity::render(Camera camera) {
             if (mode == string("normal")) {

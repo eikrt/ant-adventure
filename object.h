@@ -10,10 +10,12 @@ class Object {
         Model model;
         int hp;
     public: 
-    Object(Vector3 pos, Vector3 dim, Model model) {
+        const char* type;
+    Object(Vector3 pos, Vector3 dim, const char* type, Model model) {
         this->pos = pos;
         this->model = model;
         this->dim = dim;
+        this->type = type;
         this->vpos = {0.0f,0.0f,0.0f};
         this->hp = 1;
     }
