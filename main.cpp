@@ -9,7 +9,8 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-const float SCENEDIST =0.0f;
+#include <clocale>
+const float SCENEDIST = 0.0f;
 #define WIDTH 640
 #define HEIGHT 420
 #define CAMERAY 8.0
@@ -24,11 +25,12 @@ void startLevel(Camera& camera, Entity& player, vector<Level> levels, int curren
     player.pos.x = levels[currentLevel].startPos.x;
     player.pos.y = levels[currentLevel].startPos.y;
     player.pos.z = levels[currentLevel].startPos.z;
-     
+    player.blockersLeft = 2; 
 
 }
 int main(int argc, char* argv[])
 {
+    setlocale(LC_ALL, "utf-8");
     enum Mode {overworld, game, mainMenu, gameOver};
     Mode currentMode = mainMenu;
     const int screenWidth = 1024;
@@ -77,6 +79,10 @@ int main(int argc, char* argv[])
     textures["ladder"] = LoadTexture("res/ladder.png");
     textures["spike"] = LoadTexture("res/spikes.png");
     textures["trampoline"] = LoadTexture("res/trampoline.png");
+    textures["blocker"] = LoadTexture("res/blocker.png");
+    textures["belt"] = LoadTexture("res/belt.png");
+    textures["door_next_level"] = LoadTexture("res/door_next_level.png");
+    textures["door_next_level_locked"] = LoadTexture("res/door_next_level_locked.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
@@ -219,7 +225,14 @@ int main(int argc, char* argv[])
                 startLevel(camera,player,levels,currentLevel);
                 levelAlpha = 255; 
             }
-
+            if (player.blockersLeft <= 0) {
+                for (Entity &e : levels[currentLevel].entities) {
+                    e.mode = string("normal");
+                }
+            }
+            if (player.nextLevel) {
+                exit(0);
+            }
             for (auto &e : levels[currentLevel].entities) {
                 if (e.getHp() <= 0) {
                     continue;

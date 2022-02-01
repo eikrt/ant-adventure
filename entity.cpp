@@ -219,6 +219,9 @@ void Entity::collision_entity(Entity& otherEntity) {
             otherEntity.damage();
             this->stopY();
             this->jump(0.5f);
+            if (otherEntity.type == string("blocker")) {
+                this->blockersLeft -= 1;
+            }
         }
     }
     if (eTopY  <= oTopY
@@ -259,6 +262,10 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
             if (dir == "up" && string(otherEntity.type) == "trampoline") {
                 this->jump(2);
             }
+            if (string(otherEntity.type) == "door_next_level") {
+                if (IsKeyPressed(KEY_W))
+                    this->nextLevel = true; 
+            }
             if (string(otherEntity.type) == "coin") {
                 this->collectCoin(1);
                 otherEntity.damage();
@@ -298,4 +305,7 @@ void Entity::render(Camera camera) {
                 DrawSphere({this->pos.x + cos(this->rot) * 1.0, this->pos.y + sin(this->rot) * 1.0, this->pos.z}, 0.1, RED);
                 DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
+            else if (mode == string("locked")) {
+                DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+           }
 }

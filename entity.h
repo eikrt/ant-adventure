@@ -17,6 +17,7 @@ class Entity {
         float scale;
         int hp = 1;
         int id;
+        int blockersLeft = 0;
         Vector3 pos;
         Vector3 vpos;
         Vector3 dim;
@@ -31,6 +32,7 @@ class Entity {
         int tokens;
         vector<string> artifacts;
         float gravity;
+        bool nextLevel;
     Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
         this->texs = texs;
@@ -50,6 +52,8 @@ class Entity {
         this->coins = 0;
         this-> gravity = gravity;
         this->tokens = 0;
+        this->blockersLeft = 0;
+        this->nextLevel = false;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;

@@ -98,7 +98,43 @@ class Level {
 
 
                         }
-                        if (bytes[k][i * levelSize + j] == '$') {
+                        if (bytes[k][i * levelSize + j] == '.') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["blocker"]);
+                            Entity entity = Entity(rand(), 0, "blocker", "enemy", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == 'd') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["door_next_level"]);
+                            texs.push_back(textures["door_next_level_locked"]);
+                            Entity entity = Entity(rand(), 0, "door_next_level", "prop", 0.03f, {(float)x + 0.5,y+0.5f + 0.2f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            entity.mode = string("locked");
+
+                            this->entities.push_back(entity);
+
+                        }
+                        if (bytes[k][i * levelSize + j] == '<') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["belt"]);
+                            Entity entity = Entity(rand(), 0, "belt_left", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == '>') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["belt"]);
+                            Entity entity = Entity(rand(), 0, "belt_right", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+
+                        if (bytes[k][i * levelSize + j] == char(53425)) {
+                        cout << string(1,bytes[k][i*levelSize + j]);
                             vector<Texture2D> texs;
                             texs.push_back(textures["treasure"]);
                             Entity entity = Entity(rand(), 0, "diamond", "artifact",0.03f, {(float)x + 0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
