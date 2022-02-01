@@ -54,15 +54,18 @@ class Level {
                     if (k == 3) {
                         z = 1;
                     } 
+                    if (bytes[k][i * levelSize + j] == '|'){
+                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, false,"cube", models["stone_brick_dark"]));
+                        }
                     if (bytes[k][i * levelSize + j] == '1'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, "cube", models["stone_brick_dark"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_dark"]));
                         }
                     if (bytes[k][i * levelSize + j] == '2'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, "cube", models["stone_brick_light"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_light"]));
                         }
 
                     if (bytes[k][i * levelSize + j] == 'f'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, "floor", models["stone_brick_light"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "floor", models["stone_brick_light"]));
                         }
 
                         if (bytes[k][i * levelSize + j] == 'r') {

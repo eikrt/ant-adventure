@@ -115,11 +115,11 @@ void Entity::stopZ() {
     this->vpos.z = 0.0f;
 }
 void Entity::slowX(float delta) {
-    if (this->vpos.x < -0.01) {
-        this->vpos.x += 20 * delta / 1000;
+    if (this->vpos.x < -0.2) {
+        this->vpos.x += 25 * delta / 1000;
     }
-    else if (this->vpos.x > 0.01) {
-        this->vpos.x -= 20 * delta / 1000;
+    else if (this->vpos.x > 0.2) {
+        this->vpos.x -= 25 * delta / 1000;
     }
     else {
         this->stopX();
@@ -145,18 +145,23 @@ void Entity::collision_object(float delta, Object& object) {
             && eBottomY >= object.getPos().y
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
+        if (object.visible) {
         blockedDown = true;
+
         if (eBottomY > object.getPos().y + object.getDim().y) {
         
             this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
         }
         this->stopY();
+        }
     }
     if (eTopY  <= oTopY
             && eTopY >= object.getPos().y
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
         if (object.type == string("cube")) {
+
+        if (object.visible) {
         blockedUp = true;
         if (eBottomY > object.getPos().y + object.getDim().y) {
         
@@ -164,6 +169,7 @@ void Entity::collision_object(float delta, Object& object) {
         }
         this->vpos.y = -0.1f;
 
+            }
         }
     }
     if (
@@ -172,8 +178,10 @@ void Entity::collision_object(float delta, Object& object) {
             eRightX >= object.getPos().x &&
             eRightX <= oRightX)
     {
+        if (object.visible) {
         blockedRight = true;
         this->stopX();
+        }
         if (string(this->type) == "roboant" ){
             this->left();
 
@@ -185,8 +193,10 @@ void Entity::collision_object(float delta, Object& object) {
             eLeftX >= object.getPos().x &&
             eLeftX <= oRightX)
     {
-        blockedLeft = true;
-        this->stopX();
+        if (object.visible) {
+            blockedLeft = true;
+            this->stopX();
+        }
         if (string(this->type) == "roboant" ){
             this->right();
 
@@ -261,10 +271,9 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
             }
             if (dir == "up" && string(otherEntity.type) == "trampoline") {
                 this->jump(2);
-                exit(0);
             }
             if (dir == "up" && string(otherEntity.type) == "super_trampoline") {
-                this->jump(3);
+                this->jump(3.5);
             }
             if (string(otherEntity.type) == "belt_left") {
                 this->vpos.x -= 0.01;
