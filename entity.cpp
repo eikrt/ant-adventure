@@ -2,7 +2,7 @@
 #include "entity.h"
 #include <raylib.h>
 #include <iostream>
-#define JUMP_STRENGTH 0.2f
+#define JUMP_STRENGTH 10.0f
 #define BOUNCE 0.1f
 using namespace std;
 Vector3 Entity::getVpos() {
@@ -26,14 +26,14 @@ void Entity::damage() {
 void Entity::collectCoin(int value) {
     this->coins += value;
 }
-void Entity::tick(){
+void Entity::tick(float delta){
     if (this->pos.y < 0) {
         this->damage();
     }
     if (this->type == string("bird")) {
         this->rot += 3.14 / 64;
-        this->pos.x += cos(this->rot) / 10;
-        this->pos.y += sin(this->rot) / 10;
+        this->pos.x += cos(this->rot)  * delta * this->speed / 1000;
+        this->pos.y += sin(this->rot)  * delta * this->speed / 1000;
     }
     if (this->mode == string("cannon")) {
         this->cannonChange += 10;
@@ -43,13 +43,13 @@ void Entity::tick(){
         }
     }
     if ( !this->blockedDown && (this->mode != string("cannon") && this->mode != string("ladder"))) {
-        this->vpos.y -= this->gravity;
+        this->vpos.y -= this->gravity * delta / 1000;
     }
     if (this->type != string("bird"))
-        this->pos.y += this->vpos.y;
+        this->pos.y += this->vpos.y * delta / 1000;
     if (!(this->blockedRight && this->blockedLeft)) {
         
-    this->pos.x += this->vpos.x;
+    this->pos.x += this->vpos.x * delta / 1000;
     }
     this->pos.z += this->vpos.z;
     this-> blockedRight = false;
@@ -75,8 +75,8 @@ void Entity::cannon() {
 void Entity::launch() {
     this->cannonChange = 0;
     this->mode = string("flying");
-    this->vpos.x += cos(this->rot) / 50 * this->launchSpeed;
-    this->vpos.y += sin(this->rot)/ 50 * this->launchSpeed;
+    this->vpos.x += cos(this->rot) * this->launchSpeed;
+    this->vpos.y += sin(this->rot) * this->launchSpeed;
 }
 void Entity::left() {
     blockedRight = false;
@@ -114,12 +114,12 @@ void Entity::stopY() {
 void Entity::stopZ() {
     this->vpos.z = 0.0f;
 }
-void Entity::slowX() {
+void Entity::slowX(float delta) {
     if (this->vpos.x < -0.01) {
-        this->vpos.x += 0.01;
+        this->vpos.x += 20 * delta / 1000;
     }
     else if (this->vpos.x > 0.01) {
-        this->vpos.x -= 0.01;
+        this->vpos.x -= 20 * delta / 1000;
     }
     else {
         this->stopX();
@@ -128,9 +128,9 @@ void Entity::slowX() {
 void Entity::tilt(float t) {
     this->rot += t;
 }
-void Entity::collision_object(Object object) {
-    float ePosX = this->pos.x+this->vpos.x;
-    float ePosY = this->pos.y+this->vpos.y;
+void Entity::collision_object(float delta, Object& object) {
+    float ePosX = this->pos.x+this->vpos.x *delta / 1000;
+    float ePosY = this->pos.y+this->vpos.y * delta / 1000;
     float eRightX = ePosX + this->dim.x;
     float eLeftX = ePosX - this->dim.x;
     float eTopY = ePosY + this->dim.y;
@@ -195,9 +195,9 @@ void Entity::collision_object(Object object) {
 
     }
 }
-void Entity::collision_entity(Entity& otherEntity) {
-    float ePosX = this->pos.x+this->vpos.x;
-    float ePosY = this->pos.y+this->vpos.y;
+void Entity::collision_entity(float delta, Entity& otherEntity) {
+    float ePosX = this->pos.x+this->vpos.x*delta/1000;
+    float ePosY = this->pos.y+this->vpos.y*delta/1000;
     float eRightX = ePosX + this->dim.x;
     float eLeftX = ePosX - this->dim.x;
     float eTopY = ePosY + this->dim.y;
@@ -261,6 +261,16 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
             }
             if (dir == "up" && string(otherEntity.type) == "trampoline") {
                 this->jump(2);
+                exit(0);
+            }
+            if (dir == "up" && string(otherEntity.type) == "super_trampoline") {
+                this->jump(3);
+            }
+            if (string(otherEntity.type) == "belt_left") {
+                this->vpos.x -= 0.01;
+            }
+            if (string(otherEntity.type) == "belt_right") {
+                this->vpos.x += 0.01;
             }
             if (string(otherEntity.type) == "door_next_level") {
                 if (IsKeyPressed(KEY_W))

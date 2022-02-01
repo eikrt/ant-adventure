@@ -3,13 +3,12 @@
 #define OBJECT_H
 #include <raylib.h>
 class Object {
-    private: 
+    public: 
         Vector3 pos;
         Vector3 vpos;
         Vector3 dim;
         Model model;
         int hp;
-    public: 
         const char* type;
     Object(Vector3 pos, Vector3 dim, const char* type, Model model) {
         this->pos = pos;

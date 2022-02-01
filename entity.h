@@ -60,14 +60,14 @@ class Entity {
         blockedUp = false;
     }
     void render(Camera camera);
-    void tick();
+    void tick(float delta);
     Vector3 getPos();
     Vector3 getVpos();
     Vector3 getDim();
     int getHp();
     int getId();
-    void collision_object(Object object);
-    void collision_entity(Entity& otherEntity);
+    void collision_object(float delta, Object& object);
+    void collision_entity(float delta, Entity& otherEntity);
     void damage();
     void jump(float f);
     void cannon();
@@ -82,7 +82,7 @@ class Entity {
     void up();
     void down();
     void stopX();
-    void slowX();
+    void slowX(float delta);
     void stopY();
     void stopZ();
 

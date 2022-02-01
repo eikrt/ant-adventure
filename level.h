@@ -68,7 +68,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'r') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["roboant"]);
-                            Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.left();
                             this->entities.push_back(entity);
 
@@ -77,7 +77,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'i') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["bird"]);
-                            Entity entity = Entity(rand(), 0.00, "bird", "enemy", 0.03f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0.00, "bird", "enemy", 3.0f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -162,6 +162,14 @@ class Level {
                             vector<Texture2D> texs;
                             texs.push_back(textures["trampoline"]);
                             Entity entity = Entity(rand(), 0, "trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
+                        if (bytes[k][i * levelSize + j] == 'y') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["trampoline"]);
+                            Entity entity = Entity(rand(), 0, "super_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 

@@ -4,6 +4,6 @@
 class Monster : public Entity {
     using Entity::Entity;
     public:
-    void tick();
+    void tick(float delta);
 };
 #endif

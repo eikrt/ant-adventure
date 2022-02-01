@@ -102,7 +102,8 @@ int main(int argc, char* argv[])
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
     texs.push_back(textures["egg"]);
-    Entity player(0, 0.008, "player", "player", 0.05f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
+    
+    Entity player(0, 20, "player", "player", 5.0f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
     int currentLevel = 2;
     // levels
     vector<Level> levels;
@@ -124,6 +125,7 @@ int main(int argc, char* argv[])
         //models["cube_0"].materials[0].shader = shaders["default"];
         while (!WindowShouldClose())
         {
+            float delta = GetFrameTime() * 1000.0f;
             if (currentMode == mainMenu) {
                 if (IsKeyDown(KEY_DOWN)) {
                     if (selectedButton < mainMenuButtons.size() - 1) {
@@ -220,7 +222,7 @@ int main(int argc, char* argv[])
             }
             camera.position.y = player.getPos().y;
             camera.target.y = player.getPos().y;
-            player.tick();
+            player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels,currentLevel);
                 levelAlpha = 255; 
@@ -239,24 +241,27 @@ int main(int argc, char* argv[])
                 }
 
                 for (auto &obj : levels[currentLevel].getObjects()) {
-                    if (obj.getHp() <= 0) {
+                    if (obj.getHp() <= 0){
                         continue;
                     }
-                    e.collision_object(obj);
+                    e.collision_object(delta, obj);
                 }
-                e.tick();
+                e.tick(delta);
             }
             for (auto &obj : levels[currentLevel].getObjects()) {
                 if (obj.getHp() <= 0) {
                     continue;
                 }
-                player.collision_object(obj);
+                player.collision_object(delta, obj);
             }
             for (auto &e : levels[currentLevel].entities) {
+                    if (GetWorldToScreen(e.pos, camera).x > screenWidth && GetWorldToScreen(e.pos, camera).y > screenHeight && GetWorldToScreen(e.pos, camera).x < 0 && GetWorldToScreen(e.pos, camera).y < 0) {
+                        continue;
+                    }
                 if (e.getHp() <= 0) {
                     continue;
                 }
-                player.collision_entity(e);
+                player.collision_entity(delta, e);
             }
            // player.collision_object(ground);
             //player.collision_object(cube);
@@ -315,7 +320,7 @@ int main(int argc, char* argv[])
                 }
                 if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D)){
                     if (player.mode == string("normal") || (player.mode == string("jump") ||player.mode == string("ladder")))
-                    player.slowX();
+                    player.slowX(delta);
                 }
                 if (IsKeyPressed(KEY_X)) {
                     player.back();
@@ -341,6 +346,7 @@ int main(int argc, char* argv[])
                 for (auto &s : scenes) {
                     s.render(camera);
                 }
+            
             player.render(camera);
             EndMode3D();
             EndTextureMode();
@@ -359,6 +365,7 @@ int main(int argc, char* argv[])
             DrawTextEx(fonts[0], levels[currentLevel].title.c_str(), {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
             }
             // hud
+            DrawFPS(0,0);
             DrawTextEx(fonts[0], (string("Leafs: ") + to_string(player.coins)).c_str(), {screenWidth - 90,screenHeight - 16},18, 2, {255,255,255, 255});
             DrawTextEx(fonts[0], (string("Tokens: ") + to_string(player.tokens)).c_str(), {screenWidth - 200,screenHeight - 16},18, 2, {255,255,255, 255});
             DrawTextEx(fonts[0], (string("Artifacts: ") + to_string(player.artifacts.size())).c_str(), {screenWidth - 325,screenHeight - 16},18, 2, {255,255,255, 255});
