@@ -28,7 +28,7 @@ void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> leve
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
     camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
     player.hp = 1;
-    player.pos.x = levels[currentLevel].startPos.x;
+    player.pos.x = levels[currentLevel].startPos.x + 0.1f;
     player.pos.y = levels[currentLevel].startPos.y;
     player.pos.z = levels[currentLevel].startPos.z + 0.5f;
     player.z = levels[currentLevel].startPos.z;
@@ -115,6 +115,7 @@ int main(int argc, char* argv[])
     Entity player(0, 20, "player", "player", 5.0f, {0.5f,8.0f,SCENEDIST},SCENEDIST,{0.4f,0.5f,0.1f}, 1.0f, texs);
     int currentLevel = 2;
     // levels
+    int chunkX = 0, chunkY = 0;
     vector<Level> levels;
     levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
@@ -192,6 +193,7 @@ int main(int argc, char* argv[])
 
             }
             else if (currentMode == game) {
+
             float cameraW = 5.0f;
             float cameraH = 6.0f;
             UpdateCamera(&camera);
@@ -210,30 +212,17 @@ int main(int argc, char* argv[])
                 cvx = 0;
                 cvy = 0;
             }
-           /* else {
-                if (cvx > 0.05) {
-                    cvx -= 0.1;
-                }
-                else if (cvx < -0.05) {
-                    cvx += 0.1;
-                }
-                else {
-                    cvx = 0;
-                }
-                if (cvy > 0.05) {
-                    cvy -= 0.1;
-                }
-                else if (cvy < -0.05) {
-                    cvy += 0.1;
-                }
-                else {
-                    cvy = 0;
-                }
-            }*/
             camera.target.x += cvx; 
             camera.target.y += cvy;
             camera.position.x += cvx; 
             camera.position.y += cvy;
+            if (player.pos.x < levels[currentLevel].levelSize && player.pos.x > 0)
+                chunkX = ceil(player.pos.x / (float)levels[currentLevel].chunkSize) -1 ;
+            if (levels[currentLevel].levelSize - player.pos.y < levels[currentLevel].levelSize &&player.pos.y > 0  )
+                chunkY = ceil((levels[currentLevel].levelSize - player.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
+            //chunkX = 2;
+            //chunkY = 1;
+                //chunkY = ceil(player.pos.y / levels[currentLevel].chunkSize);
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
@@ -241,19 +230,19 @@ int main(int argc, char* argv[])
                 levelAlpha = 255; 
             }
             if (player.blockersLeft <= 0) {
-                for (Entity &e : levels[currentLevel].chunks[0][0].entities) {
+                for (Entity &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
                     e.mode = string("normal");
                 }
             }
             if (player.nextLevel) {
                 exit(0);
             }
-            for (auto &e : levels[currentLevel].chunks[0][0].entities) {
+            for (auto &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
                 if (e.getHp() <= 0) {
                     continue;
                 }
 
-                for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
+                for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
                     if (obj.getHp() <= 0){
                         continue;
                     }
@@ -261,13 +250,13 @@ int main(int argc, char* argv[])
                 }
                 e.tick(delta);
             }
-            for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
+            for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
                 if (obj.getHp() <= 0) {
                     continue;
                 }
                 player.collision_object(delta, obj);
             }
-            for (auto &e : levels[currentLevel].chunks[0][0].entities) {
+            for (auto &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
                 if (e.getHp() <= 0) {
                     continue;
                 }
@@ -339,19 +328,27 @@ int main(int argc, char* argv[])
                     player.forward();
                 }
                 BeginMode3D(camera);
-                    for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
+                for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
+                    for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
+                    for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
 
                         if (obj.getHp() <= 0) {
                             continue;
                         }
                         obj.render(camera);
                     }
-                    for (auto &e : levels[currentLevel].chunks[0][0].entities) {
+                    }
+                }
+                for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
+                    for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
+                    for (auto &e : levels[currentLevel].chunks[i][j].entities) {
 
                     if (e.getHp() <= 0) {
                         continue;
                     }
                     e.render(camera);
+                }
+                    }
                 }
                 for (auto &s : scenes) {
                     s.render(camera);

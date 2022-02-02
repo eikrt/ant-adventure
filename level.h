@@ -22,7 +22,10 @@ class Level {
         vector<vector<char>> bytes;
         map<string,Model> models;
         map<string, Texture2D> textures;
+        int chunkSize;
+        int levelSize;
         Level(string title, string path, map<string,Model> models, map<string, Texture2D> textures) {
+            this->chunkSize = 16;
             this->bytes.push_back(vector<char>());
             this->bytes.push_back(vector<char>());
             this->bytes.push_back(vector<char>());

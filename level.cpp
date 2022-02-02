@@ -2,9 +2,9 @@
 #include "level.h"
 #include "entity.h"
 using namespace std;
-const int CHUNK_SIZE = 16;
 void Level::initLevel() {
-    int levelSize = sqrt(this->bytes[0].size());
+    
+    this->levelSize = sqrt(this->bytes[0].size());
     this->reset();
     for (int k = 0; k < this->bytes.size(); k++) 
     {
@@ -12,8 +12,8 @@ void Level::initLevel() {
             this->chunks.push_back(vector<Chunk>());
             for (int n = 0; n < levelSize / 16; n++) {
             this->chunks[h].push_back(Chunk());
-                for (int i = h * CHUNK_SIZE; i < h * CHUNK_SIZE +  CHUNK_SIZE; i++) {
-                    for (int j = n * CHUNK_SIZE; j < n * CHUNK_SIZE + CHUNK_SIZE; j++) {
+                for (int i = h * this->chunkSize; i < h * this->chunkSize +  this->chunkSize; i++) {
+                    for (int j = n * this->chunkSize; j < n * this->chunkSize + this->chunkSize; j++) {
                         float x = j;
                         float y = -i + levelSize - 2.0;
                         float z = 0.0;
