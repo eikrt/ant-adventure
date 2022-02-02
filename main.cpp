@@ -16,7 +16,8 @@ const float SCENEDIST = 0.0f;
 #define CAMERAY 8.0
 #define CAMERAZ 15.0
 #define TARGETY 6.0
-const float SCREENMARGIN = 256.0;
+const float SCREENMARGIN_X = 256.0;
+const float SCREENMARGIN_Y = 64.0;
 using namespace std;
 void startLevel(Camera& camera, Entity& player, vector<Level> levels, int currentLevel) {
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
@@ -66,8 +67,8 @@ int main(int argc, char* argv[])
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
     textures["roboant"] = LoadTexture("res/mechant.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
-    textures["stoneBrickDark"] = LoadTexture("res/stone_brick_dark.png");
-    textures["stoneBrickLight"] = LoadTexture("res/stone_brick_light.png");
+    textures["stone_brick_dark"] = LoadTexture("res/medieval_stone_bricks_dark.png");
+    textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_light.png");
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     textures["bird"] = LoadTexture("res/bird.png");
@@ -96,8 +97,8 @@ int main(int argc, char* argv[])
     vector<Button> gameOverButtons;
     gameOverButtons.push_back(Button({32.0, 64.0},"Continue", fonts[0], buttonTextures));
     gameOverButtons.push_back(Button({32.0, 120.0},"Quit", fonts[0], buttonTextures));
-    models["stone_brick_light"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrickLight"];
-    models["stone_brick_dark"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stoneBrickDark"];
+    models["stone_brick_light"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stone_brick_light"];
+    models["stone_brick_dark"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stone_brick_dark"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
@@ -204,24 +205,22 @@ int main(int argc, char* argv[])
                 camera.target.y = player.getPos().y - cameraH + CAMERAY;
             }
 */
-            if (GetWorldToScreen(player.pos, camera).x > screenWidth - SCREENMARGIN) {
+            if (GetWorldToScreen(player.pos, camera).x > screenWidth - SCREENMARGIN_X) {
                 camera.position.x = player.getPos().x ;
                 camera.target.x = player.getPos().x;
             }
-            if (GetWorldToScreen(player.pos, camera).x < SCREENMARGIN) {
+            if (GetWorldToScreen(player.pos, camera).x < SCREENMARGIN_X) {
                 camera.position.x = player.getPos().x ;
                 camera.target.x = player.getPos().x;
             }
-            if (GetWorldToScreen(player.pos, camera).y > screenHeight - SCREENMARGIN) {
-                camera.position.x = player.getPos().x ;
-                camera.target.x = player.getPos().x;
+            if (GetWorldToScreen(player.pos, camera).y > screenHeight - SCREENMARGIN_Y) {
+                camera.position.y = player.getPos().y ;
+                camera.target.y = player.getPos().y;
             }
-            if (GetWorldToScreen(player.pos, camera).y < SCREENMARGIN) {
-                camera.position.x = player.getPos().x ;
-                camera.target.x = player.getPos().x;
+            if (GetWorldToScreen(player.pos, camera).y < SCREENMARGIN_Y) {
+                camera.position.y = player.getPos().y ;
+                camera.target.y = player.getPos().y;
             }
-            camera.position.y = player.getPos().y;
-            camera.target.y = player.getPos().y;
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels,currentLevel);

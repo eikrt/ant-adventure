@@ -30,6 +30,8 @@ void Entity::tick(float delta){
     if (this->pos.y < 0) {
         this->damage();
     }
+    if (this->type == string("player")) {
+    }
     if (this->type == string("bird")) {
         this->rot += 3.14 / 64;
         this->pos.x += cos(this->rot)  * delta * this->speed / 1000;
@@ -142,17 +144,17 @@ void Entity::collision_object(float delta, Object& object) {
     float oBottomY = object.getPos().y - object.getDim().y;
     if (this->pos.z == object.getPos().z) { 
     if (vpos.y <= 0 && eBottomY  <= oTopY
-            && eBottomY >= object.getPos().y
+            && eBottomY >= oBottomY
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
         if (object.visible) {
         blockedDown = true;
 
-        if (eBottomY > object.getPos().y + object.getDim().y) {
-        
-            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
-        }
-        this->stopY();
+            if (eBottomY <= oTopY && this->category != string("prop")) {
+                //this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
+                this->pos.y = oTopY + this->dim.y;
+            }
+            this->stopY();
         }
     }
     if (eTopY  <= oTopY
@@ -165,15 +167,14 @@ void Entity::collision_object(float delta, Object& object) {
         blockedUp = true;
         if (eBottomY > object.getPos().y + object.getDim().y) {
         
-            this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
+           // this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
         }
         this->vpos.y = -0.1f;
-
             }
         }
     }
     if (
-            eBottomY + 0.1 > object.getPos().y &&
+            eTopY + 0.1 > object.getPos().y &&
             eBottomY + 0.1 < oTopY &&
             eRightX >= object.getPos().x &&
             eRightX <= oRightX)
@@ -188,7 +189,7 @@ void Entity::collision_object(float delta, Object& object) {
         }
     }
     if (
-            eBottomY + 0.1 > object.getPos().y &&
+            eTopY + 0.1 > object.getPos().y &&
             eBottomY + 0.1 < oTopY &&
             eLeftX >= object.getPos().x &&
             eLeftX <= oRightX)
@@ -224,7 +225,7 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
             && ePosX > otherEntity.getPos().x - 0.2 
             && ePosX < oRightX) {
         blockedDown = true;
-        this->collisionAction(otherEntity, "up");
+        this->collisionAction(delta, otherEntity, "up");
         if (otherEntity.category == string("enemy")) {
             otherEntity.damage();
             this->stopY();
@@ -239,7 +240,7 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
             && ePosX > otherEntity.getPos().x - 0.2 
             && ePosX < oRightX) {
         blockedUp = true;
-        this->collisionAction(otherEntity, "down");
+        this->collisionAction(delta, otherEntity, "down");
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -247,7 +248,7 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
             eRightX >= otherEntity.getPos().x &&
             eRightX <= oRightX)
     {
-        this->collisionAction(otherEntity, "side");
+        this->collisionAction(delta, otherEntity, "side");
     }
     if (
             ePosY > otherEntity.getPos().y &&
@@ -255,12 +256,12 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
             eLeftX >= otherEntity.getPos().x &&
             eLeftX <= oRightX)
     {
-        this->collisionAction(otherEntity, "side");
+        this->collisionAction(delta, otherEntity, "side");
     }
 
     }
 }
-void Entity::collisionAction(Entity& otherEntity, const char* dir) {
+void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) {
 
         if (this->type == string("player")) {
             if (dir != "up" && string(otherEntity.category) == "enemy") {
@@ -275,11 +276,14 @@ void Entity::collisionAction(Entity& otherEntity, const char* dir) {
             if (dir == "up" && string(otherEntity.type) == "super_trampoline") {
                 this->jump(3.5);
             }
+            if (dir == "up" && string(otherEntity.type) == "mini_trampoline") {
+                this->jump(1.5);
+            }
             if (string(otherEntity.type) == "belt_left") {
-                this->vpos.x -= 0.01;
+                this->vpos.x -= 20 * delta / 1000;
             }
             if (string(otherEntity.type) == "belt_right") {
-                this->vpos.x += 0.01;
+                this->vpos.x += 20 * delta / 1000;
             }
             if (string(otherEntity.type) == "door_next_level") {
                 if (IsKeyPressed(KEY_W))

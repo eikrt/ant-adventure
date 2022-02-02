@@ -177,10 +177,18 @@ class Level {
 
 
                         }
+                        if (bytes[k][i * levelSize + j] == 'u') {
+                            vector<Texture2D> texs;
+                            texs.push_back(textures["trampoline"]);
+                            Entity entity = Entity(rand(), 0, "mini_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->entities.push_back(entity);
+
+
+                        }
                         if (bytes[k][i * levelSize + j] == 's') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["spike"]);
-                            Entity entity = Entity(rand(), 0, "spike", "prop", 0.03f, {(float)x + 0.5f,y + 0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "spike", "prop", 0.00f, {(float)x + 0.5f,y + 0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 

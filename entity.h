@@ -73,7 +73,7 @@ class Entity {
     void cannon();
     void launch();
     void collectCoin(int value);
-    void collisionAction(Entity& otherEntity, const char* dir);
+    void collisionAction(float delta, Entity& otherEntity, const char* dir);
     void tilt(float t);
     void left();
     void right();
