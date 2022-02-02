@@ -10,10 +10,11 @@
 #include <iostream>
 #include <algorithm>
 #include <clocale>
+#include <math.h>
 const float SCENEDIST = 0.0f;
 #define WIDTH 640
 #define HEIGHT 420
-#define CAMERAY 8.0
+#define CAMERAY 16.0
 #define CAMERAZ 15.0
 #define TARGETY 6.0
 const float SCREENMARGIN_X = 256.0;
@@ -52,7 +53,9 @@ int main(int argc, char* argv[])
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 50.0f,
     };
-
+    float cvx = 0.0f;
+    float cvy = 0.0f;
+    SetCameraMode(camera, CAMERA_CUSTOM);
     // fonts
     Font fonts[1] = {0};
     fonts[0] = LoadFont("fonts/romulus.png");
@@ -186,41 +189,46 @@ int main(int argc, char* argv[])
             else if (currentMode == game) {
             float cameraW = 5.0f;
             float cameraH = 6.0f;
-           /* if (player.getPos().x - camera.position.x > cameraW) {
-            
-                camera.position.x = player.getPos().x + cameraW;
-                camera.target.x = player.getPos().x + cameraW;
+            UpdateCamera(&camera);
+            int worldToScreenX = GetWorldToScreen(player.pos, camera).x;
+            int worldToScreenY = GetWorldToScreen(player.pos, camera).y;
+            float marginX = 5.0f;
+            float marginY = 2.0f;
+            float cameraRot = atan2(camera.position.x - player.pos.x, camera.position.y - player.pos.y) + 3.14 / 2;
+            float dist = sqrt(pow(camera.position.x - player.pos.x, 2) + sqrt(pow(camera.position.y - player.pos.y - 0.0f,2))); 
+            if (dist > 2.0f)
+            {
+                cvx = cos(cameraRot) * 5.0f * delta / 1000.0f;
+                cvy = -sin(cameraRot) * 5.0f * delta / 1000.0f;
             }
-            else if (player.getPos().x - camera.position.x < -cameraW) {
-                camera.position.x = player.getPos().x - cameraW;
-                camera.target.x = player.getPos().x - cameraW;
+            else {
+                cvx = 0;
+                cvy = 0;
             }
-            if (player.getPos().y - camera.position.x > cameraH) {
-            
-                camera.position.y = player.getPos().y - cameraH + CAMERAY;
-                camera.target.y = player.getPos().y - cameraH + CAMERAY;
-            }
-            else if (player.getPos().y - camera.position.y < -cameraH) {
-                camera.position.y = player.getPos().y - cameraH + CAMERAY;
-                camera.target.y = player.getPos().y - cameraH + CAMERAY;
-            }
-*/
-            if (GetWorldToScreen(player.pos, camera).x > screenWidth - SCREENMARGIN_X) {
-                camera.position.x = player.getPos().x ;
-                camera.target.x = player.getPos().x;
-            }
-            if (GetWorldToScreen(player.pos, camera).x < SCREENMARGIN_X) {
-                camera.position.x = player.getPos().x ;
-                camera.target.x = player.getPos().x;
-            }
-            if (GetWorldToScreen(player.pos, camera).y > screenHeight - SCREENMARGIN_Y) {
-                camera.position.y = player.getPos().y ;
-                camera.target.y = player.getPos().y;
-            }
-            if (GetWorldToScreen(player.pos, camera).y < SCREENMARGIN_Y) {
-                camera.position.y = player.getPos().y ;
-                camera.target.y = player.getPos().y;
-            }
+           /* else {
+                if (cvx > 0.05) {
+                    cvx -= 0.1;
+                }
+                else if (cvx < -0.05) {
+                    cvx += 0.1;
+                }
+                else {
+                    cvx = 0;
+                }
+                if (cvy > 0.05) {
+                    cvy -= 0.1;
+                }
+                else if (cvy < -0.05) {
+                    cvy += 0.1;
+                }
+                else {
+                    cvy = 0;
+                }
+            }*/
+            camera.target.x += cvx; 
+            camera.target.y += cvy;
+            camera.position.x += cvx; 
+            camera.position.y += cvy;
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels,currentLevel);
