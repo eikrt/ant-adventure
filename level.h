@@ -17,6 +17,7 @@ class Level {
         vector<Object> objects; 
         vector<Entity> entities; 
         Vector3 startPos;
+        float startZ;
         string title;
         Level(string title, string path, map<string,Model> models, map<string, Texture2D> textures) {
             vector<vector<char>> bytes;
@@ -43,35 +44,36 @@ class Level {
                     float y = -i + levelSize - 2.0;
                     float z = 0.0;
                     if (k == 0) {
-                       z = -2; 
+                       z = -1.0; 
                     } 
                     if (k == 1) {
-                       z = -1; 
+                       z = 0.0; 
                     } 
                     if (k == 2) {
-                        z = 0;
+                        z = 1.0;
                     }
                     if (k == 3) {
-                        z = 1;
+                        z = 2.0;
                     } 
                     if (bytes[k][i * levelSize + j] == '|'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, false,"cube", models["stone_brick_dark"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, false,"cube", models["stone_brick_dark"]));
                         }
                     if (bytes[k][i * levelSize + j] == '1'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_dark"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_dark"]));
                         }
                     if (bytes[k][i * levelSize + j] == '2'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_light"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "cube", models["stone_brick_light"]));
                         }
 
                     if (bytes[k][i * levelSize + j] == 'f'){
-                        this->objects.push_back(Object({(float) x ,(float) y,z},{1.0f,1.0f,1.0f}, true, "floor", models["stone_brick_light"]));
+                        this->objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "floor", models["stone_brick_light"]));
                         }
 
                         if (bytes[k][i * levelSize + j] == 'r') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["roboant"]);
-                            Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+
+                            Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.left();
                             this->entities.push_back(entity);
 
@@ -80,7 +82,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'i') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["bird"]);
-                            Entity entity = Entity(rand(), 0.00, "bird", "enemy", 3.0f, {(float)x,y+1.0f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0.00, "bird", "enemy", 3.0f, {(float)x,y+1.0f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -88,7 +90,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'c') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["coin"]);
-                            Entity entity = Entity(rand(), 0, "coin", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "coin", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -96,7 +98,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'v') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["valuable_coin"]);
-                            Entity entity = Entity(rand(), 0, "valuable_coin", "collectible", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "valuable_coin", "collectible", 0.03f, {(float)x + 0.5,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -104,7 +106,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == '.') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["blocker"]);
-                            Entity entity = Entity(rand(), 0, "blocker", "enemy", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "blocker", "enemy", 0.03f, {(float)x + 0.5,y+0.5f,z},z, {1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -113,7 +115,7 @@ class Level {
                             vector<Texture2D> texs;
                             texs.push_back(textures["door_next_level"]);
                             texs.push_back(textures["door_next_level_locked"]);
-                            Entity entity = Entity(rand(), 0, "door_next_level", "prop", 0.03f, {(float)x + 0.5,y+0.5f + 0.2f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "door_next_level", "prop", 0.03f, {(float)x + 0.5,y+0.5f + 0.2f,z + 0.1f},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.mode = string("locked");
 
                             this->entities.push_back(entity);
@@ -122,7 +124,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == '<') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["belt"]);
-                            Entity entity = Entity(rand(), 0, "belt_left", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "belt_left", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -130,7 +132,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == '>') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["belt"]);
-                            Entity entity = Entity(rand(), 0, "belt_right", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "belt_right", "prop", 0.03f, {(float)x + 0.5,y+0.5f,z},z, {1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -140,7 +142,7 @@ class Level {
                         cout << string(1,bytes[k][i*levelSize + j]);
                             vector<Texture2D> texs;
                             texs.push_back(textures["treasure"]);
-                            Entity entity = Entity(rand(), 0, "diamond", "artifact",0.03f, {(float)x + 0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "diamond", "artifact",0.03f, {(float)x + 0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -148,7 +150,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 't') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["token"]);
-                            Entity entity = Entity(rand(), 0, "token", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "token", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -156,7 +158,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'l') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["ladder"]);
-                            Entity entity = Entity(rand(), 0, "ladder", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "ladder", "collectible", 0.03f, {(float)x + 0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -164,7 +166,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'b') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["trampoline"]);
-                            Entity entity = Entity(rand(), 0, "trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -172,7 +174,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'y') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["trampoline"]);
-                            Entity entity = Entity(rand(), 0, "super_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "super_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -180,7 +182,7 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 'u') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["trampoline"]);
-                            Entity entity = Entity(rand(), 0, "mini_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "mini_trampoline", "prop", 0.03f, {(float)x+0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
@@ -188,13 +190,14 @@ class Level {
                         if (bytes[k][i * levelSize + j] == 's') {
                             vector<Texture2D> texs;
                             texs.push_back(textures["spike"]);
-                            Entity entity = Entity(rand(), 0, "spike", "prop", 0.00f, {(float)x + 0.5f,y + 0.5f,z},{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            Entity entity = Entity(rand(), 0, "spike", "prop", 0.00f, {(float)x + 0.5f,y + 0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->entities.push_back(entity);
 
 
                         }
                         if (bytes[k][i * levelSize + j] == 'p') {
                             this->startPos = {x,y+1.0,z};
+                            startZ = z;
                         }
 
                 }

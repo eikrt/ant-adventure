@@ -91,13 +91,15 @@ void Entity::right() {
     this->vpos.x = this->speed;
 }
 void Entity::forward() {
-    if (this->pos.z < 1) { 
+    if (this->z < 2.0f) { 
         this->pos.z += 1.0;
+        this->z += 1.0;
     }
 }
 void Entity::back() {
-    if (this->pos.z > -1) {
+    if (this->z > 0.0f) {
         this->pos.z -= 1.0;
+        this->z -= 1.0;
     }
 }
 void Entity::down() {
@@ -142,7 +144,7 @@ void Entity::collision_object(float delta, Object& object) {
     float oLeftX = object.getPos().x - object.getDim().x;
     float oTopY = object.getPos().y + object.getDim().y;
     float oBottomY = object.getPos().y - object.getDim().y;
-    if (this->pos.z == object.getPos().z) { 
+    if (this->z == object.z) { 
     if (vpos.y <= 0 && eBottomY  <= oTopY
             && eBottomY >= oBottomY
             && ePosX > object.getPos().x - 0.2 
@@ -213,17 +215,18 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
     float eLeftX = ePosX - this->dim.x;
     float eTopY = ePosY + this->dim.y;
     float eBottomY = ePosY - this->dim.y;
+    float eCenterX = ePosX + this->dim.x/2;
 
     float oRightX = otherEntity.getPos().x + otherEntity.getDim().x;
     float oLeftX = otherEntity.getPos().x - otherEntity.getDim().x;
+
     float oTopY = otherEntity.getPos().y + otherEntity.getDim().y;
     float oBottomY = otherEntity.getPos().y - otherEntity.getDim().y;
-    
-    if (this->pos.z == otherEntity.getPos().z) { 
+    if (this->z == otherEntity.z) { 
     if (eBottomY  <= oTopY
             && eBottomY >= otherEntity.getPos().y
-            && ePosX > otherEntity.getPos().x - 0.2 
-            && ePosX < oRightX) {
+            && eCenterX> otherEntity.getPos().x - 0.2 
+            && eCenterX < oRightX) {
         blockedDown = true;
         this->collisionAction(delta, otherEntity, "up");
         if (otherEntity.category == string("enemy")) {

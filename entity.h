@@ -33,10 +33,12 @@ class Entity {
         vector<string> artifacts;
         float gravity;
         bool nextLevel;
-    Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, Vector3 dim, float scale, vector<Texture2D> texs) {
+        float z;
+    Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, float z, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
         this->texs = texs;
         this->dim = dim;
+        this->z = z;
         this->scale = scale;
         this->vpos = {0.0f,0.0f,0.0f};
         this->speed = speed;
@@ -54,6 +56,7 @@ class Entity {
         this->tokens = 0;
         this->blockersLeft = 0;
         this->nextLevel = false;
+        this->z = z;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;

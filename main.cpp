@@ -26,7 +26,8 @@ void startLevel(Camera& camera, Entity& player, vector<Level> levels, int curren
     player.hp = 1;
     player.pos.x = levels[currentLevel].startPos.x;
     player.pos.y = levels[currentLevel].startPos.y;
-    player.pos.z = levels[currentLevel].startPos.z;
+    player.pos.z = levels[currentLevel].startPos.z + 0.5f;
+    player.z = levels[currentLevel].startPos.z;
     player.blockersLeft = 2; 
 
 }
@@ -107,7 +108,7 @@ int main(int argc, char* argv[])
     texs.push_back(textures["player"]);
     texs.push_back(textures["egg"]);
     
-    Entity player(0, 20, "player", "player", 5.0f, {0.1f,8.0f,SCENEDIST},{0.4f,0.5f,0.1f}, 1.0f, texs);
+    Entity player(0, 20, "player", "player", 5.0f, {0.5f,8.0f,SCENEDIST},SCENEDIST,{0.4f,0.5f,0.1f}, 1.0f, texs);
     int currentLevel = 2;
     // levels
     vector<Level> levels;
