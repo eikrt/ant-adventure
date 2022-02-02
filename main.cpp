@@ -20,7 +20,8 @@ const float SCENEDIST = 0.0f;
 const float SCREENMARGIN_X = 256.0;
 const float SCREENMARGIN_Y = 64.0;
 using namespace std;
-void startLevel(Camera& camera, Entity& player, vector<Level> levels, int currentLevel) {
+void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> levels, int currentLevel) {
+    level.initLevel();
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
     camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
     player.hp = 1;
@@ -115,7 +116,7 @@ int main(int argc, char* argv[])
     levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
-    startLevel(camera, player, levels, currentLevel);
+    startLevel(camera, player, levels[currentLevel], levels, currentLevel);
     // start position
     
     vector<Scenery> scenes;
@@ -232,7 +233,7 @@ int main(int argc, char* argv[])
             camera.position.y += cvy;
             player.tick(delta);
             if (player.getHp() <= 0) {
-                startLevel(camera,player,levels,currentLevel);
+                startLevel(camera,player,levels[currentLevel],levels,currentLevel);
                 levelAlpha = 255; 
             }
             if (player.blockersLeft <= 0) {
