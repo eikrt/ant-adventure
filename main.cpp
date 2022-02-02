@@ -241,19 +241,19 @@ int main(int argc, char* argv[])
                 levelAlpha = 255; 
             }
             if (player.blockersLeft <= 0) {
-                for (Entity &e : levels[currentLevel].entities) {
+                for (Entity &e : levels[currentLevel].chunks[0][0].entities) {
                     e.mode = string("normal");
                 }
             }
             if (player.nextLevel) {
                 exit(0);
             }
-            for (auto &e : levels[currentLevel].entities) {
+            for (auto &e : levels[currentLevel].chunks[0][0].entities) {
                 if (e.getHp() <= 0) {
                     continue;
                 }
 
-                for (auto &obj : levels[currentLevel].getObjects()) {
+                for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
                     if (obj.getHp() <= 0){
                         continue;
                     }
@@ -261,13 +261,13 @@ int main(int argc, char* argv[])
                 }
                 e.tick(delta);
             }
-            for (auto &obj : levels[currentLevel].getObjects()) {
+            for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
                 if (obj.getHp() <= 0) {
                     continue;
                 }
                 player.collision_object(delta, obj);
             }
-            for (auto &e : levels[currentLevel].entities) {
+            for (auto &e : levels[currentLevel].chunks[0][0].entities) {
                 if (e.getHp() <= 0) {
                     continue;
                 }
@@ -339,14 +339,14 @@ int main(int argc, char* argv[])
                     player.forward();
                 }
                 BeginMode3D(camera);
-                    for (auto &obj : levels[currentLevel].getObjects()) {
+                    for (auto &obj : levels[currentLevel].chunks[0][0].objects) {
 
                         if (obj.getHp() <= 0) {
                             continue;
                         }
                         obj.render(camera);
                     }
-                    for (auto &e : levels[currentLevel].getEntities()) {
+                    for (auto &e : levels[currentLevel].chunks[0][0].entities) {
 
                     if (e.getHp() <= 0) {
                         continue;

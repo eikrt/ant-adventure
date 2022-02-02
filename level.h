@@ -10,12 +10,12 @@
 #include "object.h"
 #include "entity.h"
 #include "monster.h"
+#include "chunk.h"
 using namespace std;
 class Level {
     private:
     public:
-        vector<Object> objects; 
-        vector<Entity> entities; 
+        vector<vector<Chunk>> chunks;
         Vector3 startPos;
         float startZ;
         string title;
@@ -44,7 +44,5 @@ class Level {
         }
     void initLevel();
     void reset();
-    vector<Object> getObjects();
-    vector<Entity> getEntities();
 };
 #endif
