@@ -21,6 +21,9 @@ const float SCREENMARGIN_X = 256.0;
 const float SCREENMARGIN_Y = 64.0;
 using namespace std;
 void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> levels, int currentLevel) {
+    player.hp = 1;
+    player.coins = 0;
+    player.tokens = 0;
     level.initLevel();
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
     camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
@@ -116,9 +119,9 @@ int main(int argc, char* argv[])
     levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
-    startLevel(camera, player, levels[currentLevel], levels, currentLevel);
     // start position
     
+    startLevel(camera,player,levels[currentLevel],levels,currentLevel);
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
@@ -234,6 +237,7 @@ int main(int argc, char* argv[])
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
+                levels[currentLevel].initLevel();
                 levelAlpha = 255; 
             }
             if (player.blockersLeft <= 0) {
@@ -264,9 +268,6 @@ int main(int argc, char* argv[])
                 player.collision_object(delta, obj);
             }
             for (auto &e : levels[currentLevel].entities) {
-                    if (GetWorldToScreen(e.pos, camera).x > screenWidth && GetWorldToScreen(e.pos, camera).y > screenHeight && GetWorldToScreen(e.pos, camera).x < 0 && GetWorldToScreen(e.pos, camera).y < 0) {
-                        continue;
-                    }
                 if (e.getHp() <= 0) {
                     continue;
                 }

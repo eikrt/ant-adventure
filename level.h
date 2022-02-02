@@ -43,6 +43,7 @@ class Level {
             
         }
     void initLevel();
+    void reset();
     vector<Object> getObjects();
     vector<Entity> getEntities();
 };

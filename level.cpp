@@ -4,7 +4,9 @@
 using namespace std;
 void Level::initLevel() {
     int levelSize = sqrt(this->bytes[0].size());
-    for (int k = 0; k < this->bytes.size(); k++) {
+    this->reset();
+    for (int k = 0; k < this->bytes.size(); k++) 
+        {
         for (int i = 0; i < levelSize; i++) {
             for (int j = 0; j < levelSize; j++) {
                 float x = j;
@@ -170,6 +172,10 @@ void Level::initLevel() {
             }
         }
     }
+}
+void Level::reset() {
+    this->objects.clear();
+    this->entities.clear();
 }
 vector<Object> Level::getObjects() {
     return this->objects;
