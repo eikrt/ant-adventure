@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_light.png");
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
-    textures["bird"] = LoadTexture("res/bird.png");
+    textures["bird"] = LoadTexture("res/stinger.png");
     textures["egg"] = LoadTexture("res/ant_egg_4.png");
     textures["coin"] = LoadTexture("res/leaf.png");
     textures["valuable_coin"] = LoadTexture("res/autumn_leaf.png");
