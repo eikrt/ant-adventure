@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     textures["coin"] = LoadTexture("res/leaf.png");
     textures["valuable_coin"] = LoadTexture("res/autumn_leaf.png");
     textures["treasure"] = LoadTexture("res/diamond.png");
-    textures["token"] = LoadTexture("res/rock.png");
+    textures["token"] = LoadTexture("res/token.png");
     textures["ladder"] = LoadTexture("res/ladder.png");
     textures["spike"] = LoadTexture("res/spikes.png");
     textures["trampoline"] = LoadTexture("res/trampoline.png");

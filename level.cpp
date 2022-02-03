@@ -3,7 +3,6 @@
 #include "entity.h"
 using namespace std;
 void Level::initLevel() {
-    
     this->levelSize = sqrt(this->bytes[0].size());
     this->reset();
     for (int k = 0; k < this->bytes.size(); k++) 

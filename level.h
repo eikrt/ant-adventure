@@ -29,10 +29,11 @@ class Level {
             this->bytes.push_back(vector<char>());
             this->bytes.push_back(vector<char>());
             this->bytes.push_back(vector<char>());
+            this->bytes.push_back(vector<char>());
             this->models = models;
             this->textures = textures;
             this->title = title;
-            for (int i = 0; i < 3; i++) { 
+            for (int i = 0; i < 4; i++) {
                 char byte = 0;
                 ifstream file(path + to_string(i)); 
                     while (file.get(byte)) {
