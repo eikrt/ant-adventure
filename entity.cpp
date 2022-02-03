@@ -133,6 +133,9 @@ void Entity::tilt(float t) {
     this->rot += t;
 }
 void Entity::collision_object(float delta, Object& object) {
+    if (this->type == string("bird")) {
+        return;
+    }
     float ePosX = this->pos.x+this->vpos.x *delta / 1000;
     float ePosY = this->pos.y+this->vpos.y * delta / 1000;
     float eRightX = ePosX + this->dim.x;
@@ -268,7 +271,8 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
 
         if (this->type == string("player")) {
             if (dir != "up" && string(otherEntity.category) == "enemy") {
-                this->damage();
+                if (string(otherEntity.category) != "blocker")
+                    this->damage();
             }
             if (dir == "up"&& string(otherEntity.type) == "spike") {
                 this->damage();

@@ -127,7 +127,8 @@ int main(int argc, char* argv[])
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
-
+    int chunkW = 2;
+    int chunkH = 2;
     // shaders
         map<const char*, Shader> shaders;
         shaders["default"] = LoadShader(TextFormat("shaders/base_lightning.vs"), TextFormat("shaders/lightning.fs"));
@@ -237,19 +238,38 @@ int main(int argc, char* argv[])
             if (player.nextLevel) {
                 exit(0);
             }
-            for (auto &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
-                if (e.getHp() <= 0) {
-                    continue;
+                int chunkWa = chunkX - chunkW;
+                int chunkWb = chunkX + chunkW;
+                int chunkHa = chunkY - chunkH;
+                int chunkHb = chunkY + chunkH;
+                if (chunkWa < 0) {
+                    chunkWa = 0;
                 }
-
-                for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
-                    if (obj.getHp() <= 0){
-                        continue;
+                if (chunkHa < 0) {
+                    chunkHa = 0;
+                }
+                if (chunkWb > levels[currentLevel].levelSize) {
+                    chunkWb = levels[currentLevel].levelSize;
+                }
+                if (chunkHb > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                    chunkHb = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+                }
+                for (int i = chunkHa; i < chunkHb; i++){
+                for (int j = chunkWa; j < chunkWb; j++){
+                    for (auto &e : levels[currentLevel].chunks[i][j].entities) {
+                        if (e.getHp() <= 0) {
+                            continue;
+                        }
+                        for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
+                            if (obj.getHp() <= 0){
+                                continue;
+                            }
+                            e.collision_object(delta, obj);
+                        }
+                        e.tick(delta);
                     }
-                    e.collision_object(delta, obj);
                 }
-                e.tick(delta);
-            }
+                }
             for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
                 if (obj.getHp() <= 0) {
                     continue;

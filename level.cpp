@@ -8,9 +8,9 @@ void Level::initLevel() {
     this->reset();
     for (int k = 0; k < this->bytes.size(); k++) 
     {
-        for (int h = 0; h < levelSize / 16; h++) {
+        for (int h = 0; h < levelSize / this->chunkSize; h++) {
             this->chunks.push_back(vector<Chunk>());
-            for (int n = 0; n < levelSize / 16; n++) {
+            for (int n = 0; n < levelSize / this->chunkSize; n++) {
             this->chunks[h].push_back(Chunk());
                 for (int i = h * this->chunkSize; i < h * this->chunkSize +  this->chunkSize; i++) {
                     for (int j = n * this->chunkSize; j < n * this->chunkSize + this->chunkSize; j++) {
@@ -112,7 +112,7 @@ void Level::initLevel() {
 
                         }
 
-                        if (this->bytes[k][i * levelSize + j] == char(53425)) {
+                        if (this->bytes[k][i * levelSize + j] == '*') {
                             vector<Texture2D> texs;
                             texs.push_back(this->textures["treasure"]);
                             Entity entity = Entity(rand(), 0, "diamond", "artifact",0.03f, {(float)x + 0.5f,y+0.5f,z},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
