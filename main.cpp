@@ -136,6 +136,7 @@ int main(int argc, char* argv[])
     int chunkW = 2;
     int chunkH = 2;
     // shaders
+        Shader alphaDiscard = LoadShader(NULL, "shaders/alpha_discard.fs");
         map<const char*, Shader> postShaders;
         postShaders["bloom"] = LoadShader(0, TextFormat("shaders/bloom.fs"));
         postShaders["pixelizer"] = LoadShader(0, TextFormat("shaders/pixelizer.fs"));
@@ -146,6 +147,7 @@ int main(int argc, char* argv[])
         int ambientLoc = GetShaderLocation(shaders["default"], "ambient");
         float dim[4] = {0.2f,0.2f,0.2f,0.2f};
         SetShaderValue(shaders["default"], ambientLoc, dim, SHADER_UNIFORM_VEC4);
+
         Light lights[4] = { 0 };
         lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), {215,215,190,255}, shaders["default"]);
         lights[0].enabled = true;
@@ -392,6 +394,7 @@ int main(int argc, char* argv[])
                     }
                     }
                 }
+                BeginShaderMode(alphaDiscard);
                 for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
                     for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
                     for (auto &e : levels[currentLevel].chunks[i][j].entities) {
@@ -406,7 +409,7 @@ int main(int argc, char* argv[])
                 for (auto &s : scenes) {
                     s.render(camera);
                 }
-            
+            EndShaderMode(); 
             player.render(camera);
             EndMode3D();
             EndTextureMode();
