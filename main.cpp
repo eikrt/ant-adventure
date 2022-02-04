@@ -11,12 +11,22 @@
 #include <algorithm>
 #include <clocale>
 #include <math.h>
+#include "raymath.h"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 const float SCENEDIST = 0.0f;
-#define WIDTH 640
-#define HEIGHT 420
+//#define WIDTH 640
+//#define HEIGHT 420
+#define WIDTH 1024
+#define HEIGHT 576
 #define CAMERAY 16.0
 #define CAMERAZ 15.0
 #define TARGETY 6.0
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
 const float SCREENMARGIN_X = 256.0;
 const float SCREENMARGIN_Y = 64.0;
 using namespace std;
@@ -57,6 +67,7 @@ int main(int argc, char* argv[])
             .target   = {0.0f, TARGETY, 0.0f},
             .up       = {0.0f, 1.0f, 0.0f},
             .fovy     = 50.0f,
+            .projection = CAMERA_PERSPECTIVE
     };
     float cvx = 0.0f;
     float cvy = 0.0f;
@@ -68,7 +79,7 @@ int main(int argc, char* argv[])
     int selectedButton = 0;
     map<string, Model> models;
     map<string, Texture2D> textures;
-    models["stone_brick_dark"] = LoadModel("models/cube.obj");
+    models["stone_brick_dark"] = LoadModel("models/cube_larger.obj");
     models["stone_brick_light"] = LoadModel("models/cube.obj");
     models["ground"] = LoadModel("models/scenery.obj");
 
@@ -76,7 +87,7 @@ int main(int argc, char* argv[])
     textures["roboant"] = LoadTexture("res/mechant.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
     textures["stone_brick_dark"] = LoadTexture("res/medieval_stone_bricks_dark.png");
-    textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_light.png");
+    textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_dark.png");
     textures["grass"] = LoadTexture("res/grass.png");
     textures["fungus"] = LoadTexture("res/fungus_monster.png");
     textures["bird"] = LoadTexture("res/stinger.png");
@@ -116,13 +127,8 @@ int main(int argc, char* argv[])
     int currentLevel = 2;
     // levels
     int chunkX = 0, chunkY = 0;
-    vector<Level> levels;
-    levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
-    levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
-    levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
     // start position
     
-    startLevel(camera,player,levels[currentLevel],levels,currentLevel);
     vector<Scenery> scenes;
     
     scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
@@ -130,9 +136,27 @@ int main(int argc, char* argv[])
     int chunkW = 2;
     int chunkH = 2;
     // shaders
+        map<const char*, Shader> postShaders;
+        postShaders["bloom"] = LoadShader(0, TextFormat("shaders/bloom.fs"));
+        postShaders["pixelizer"] = LoadShader(0, TextFormat("shaders/pixelizer.fs"));
+        postShaders["posterization"] = LoadShader(0, TextFormat("shaders/posterization.fs"));
         map<const char*, Shader> shaders;
         shaders["default"] = LoadShader(TextFormat("shaders/base_lightning.vs"), TextFormat("shaders/lightning.fs"));
         shaders["default"].locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shaders["default"], "viewPos");
+        int ambientLoc = GetShaderLocation(shaders["default"], "ambient");
+        float dim[4] = {0.2f,0.2f,0.2f,0.2f};
+        SetShaderValue(shaders["default"], ambientLoc, dim, SHADER_UNIFORM_VEC4);
+        Light lights[4] = { 0 };
+        lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), {215,215,190,255}, shaders["default"]);
+        lights[0].enabled = true;
+    vector<Level> levels;
+    levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
+    levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
+    levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
+    startLevel(camera,player,levels[currentLevel],levels,currentLevel);
+        for (auto &m : models) {
+            m.second.materials[0].shader = shaders["default"];
+        }
         //models["cube_0"].materials[0].shader = shaders["default"];
         while (!WindowShouldClose())
         {
@@ -194,10 +218,19 @@ int main(int argc, char* argv[])
 
             }
             else if (currentMode == game) {
+            UpdateCamera(&camera);
+            for (auto &l : lights) {
+                UpdateLightValues(shaders["default"], l);
+
+            }
+                float shaderPos[3] = {camera.position.x, camera.position.y, camera.position.z};
+                SetShaderValue(shaders["default"], shaders["default"].locs[SHADER_LOC_VECTOR_VIEW], shaderPos, SHADER_UNIFORM_VEC3);
+
+
+
 
             float cameraW = 5.0f;
             float cameraH = 6.0f;
-            UpdateCamera(&camera);
             int worldToScreenX = GetWorldToScreen(player.pos, camera).x;
             int worldToScreenY = GetWorldToScreen(player.pos, camera).y;
             float marginX = 5.0f;
@@ -380,7 +413,9 @@ int main(int argc, char* argv[])
 
         }
         BeginDrawing();
-            DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
+           // BeginShaderMode(postShaders["posterization"]);
+                DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
+            //EndShaderMode();
             if (levelAlpha > 0) {
                 levelAlpha -= 2;
             }
@@ -407,6 +442,12 @@ int main(int argc, char* argv[])
     }
     for (auto const& m : models) {
         UnloadModel(m.second);
+    }
+    for (auto const& s : shaders) {
+        UnloadShader(s.second);
+    }
+    for (auto const& s : postShaders) {
+        UnloadShader(s.second);
     }
     UnloadRenderTexture(target);
     CloseWindow();

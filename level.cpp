@@ -33,13 +33,18 @@ void Level::initLevel() {
                             this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, false,"cube", this->models["stone_brick_dark"]));
                         }
                         if (this->bytes[k][i * levelSize + j] == '1'){
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_dark"]));
+                            float f = (float)rand()/(float)(RAND_MAX/0.2);
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z + f},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_dark"]));
                         }
                         if (this->bytes[k][i * levelSize + j] == '2'){
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_light"]));
+                            float fz = (float)rand()/(float)(RAND_MAX/0.2);
+                            float fy = (float)rand()/(float)(RAND_MAX/0.1);
+;
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y + fy,z + fz},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_light"]));
                         }
 
                         if (this->bytes[k][i * levelSize + j] == 'f'){
+                            float f = (float)rand()/(float)(RAND_MAX/0.2);
                             this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "floor", this->models["stone_brick_light"]));
                         }
 
