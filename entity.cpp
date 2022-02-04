@@ -151,7 +151,7 @@ void Entity::collision_object(float delta, Object& object) {
     if (vpos.y <= 0 && eBottomY  <= oTopY
             && eBottomY >= oBottomY
             && ePosX > object.getPos().x - 0.2 
-            && ePosX < oRightX) {
+            && ePosX < oRightX + 0.2) {
         if (object.visible) {
         blockedDown = true;
 
@@ -163,7 +163,7 @@ void Entity::collision_object(float delta, Object& object) {
         }
     }
     if (eTopY  <= oTopY
-            && eTopY >= object.getPos().y
+            && eTopY >= object.getPos().y - 0.1f
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX) {
         if (object.type == string("cube")) {
@@ -293,7 +293,7 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
                 this->vpos.x += 20 * delta / 1000;
             }
             if (string(otherEntity.type) == "door_next_level") {
-                if (IsKeyPressed(KEY_W))
+                if (IsKeyPressed(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP))
                     this->nextLevel = true; 
             }
             if (string(otherEntity.type) == "coin") {

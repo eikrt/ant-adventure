@@ -138,18 +138,18 @@ int main(int argc, char* argv[])
         {
             float delta = GetFrameTime() * 1000.0f;
             if (currentMode == mainMenu) {
-                if (IsKeyDown(KEY_DOWN)) {
+                if (IsKeyDown(KEY_DOWN)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                     if (selectedButton < mainMenuButtons.size() - 1) {
                         selectedButton+=1;
                         
                     }
                 }
-                if (IsKeyDown(KEY_UP)) {
+                if (IsKeyDown(KEY_UP)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
                     if (selectedButton > 0) {
                         selectedButton-=1;
                     }
                 }
-                if (IsKeyDown(KEY_SPACE)) {
+                if (IsKeyDown(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
                     if (selectedButton == 0) {
                         currentMode = game;
                     }
@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
             {
                 ClearBackground(SKYBLUE);
 
-                if (IsKeyPressed(KEY_SPACE)) {
+                if (IsKeyPressed(KEY_SPACE) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
                     if (player.mode == string("normal")) {
                         player.jump(1.0);
 
@@ -299,52 +299,52 @@ int main(int argc, char* argv[])
                         player.launch();
                     }
                 }
-                if (IsKeyDown(KEY_D)){
+                if (IsKeyDown(KEY_D)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
                     if (player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder"))
                         player.right();
                 }
-                if (IsKeyDown(KEY_A)) {
+                if (IsKeyDown(KEY_A)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
                     if(player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder")) 
                         player.left();
                 }
-                if (IsKeyDown(KEY_W)) {
+                if (IsKeyDown(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
                     if(player.mode == string("ladder")) {
                         player.up();
                     }
                 }
-                if (IsKeyReleased(KEY_W)) {
+                if (IsKeyReleased(KEY_W)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
                     if(player.mode == string("ladder")) {
                         player.vpos.y = 0;
                     }
                     
                 }
-                if (IsKeyReleased(KEY_S)) {
+                if (IsKeyReleased(KEY_S)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                     if(player.mode == string("ladder")) {
                         player.vpos.y= 0;
                     }
                     
                 }
-                if (IsKeyDown(KEY_S)) {
+                if (IsKeyDown(KEY_S)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                     if(player.mode == string("ladder")) {
                         player.down();
                     }
                 }
-                if (IsKeyPressed(KEY_A)){
+                if (IsKeyPressed(KEY_A) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
                     if(player.mode == string("cannon")) 
                         player.tilt(3.14/4);
                 }
-                if (IsKeyPressed(KEY_D)) {
+                if (IsKeyPressed(KEY_D)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
                     if(player.mode == string("cannon")) 
                         player.tilt(-3.14/4);
                 }
-                if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D)){
+                if ((!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))||(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT && IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)))){
                     if (player.mode == string("normal") || (player.mode == string("jump") ||player.mode == string("ladder")))
                     player.slowX(delta);
                 }
-                if (IsKeyPressed(KEY_X)) {
+                if (IsKeyPressed(KEY_X)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1)) {
                     player.back();
                 }
-                if (IsKeyPressed(KEY_Z)) {
+                if (IsKeyPressed(KEY_Z)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_TRIGGER_1)) {
                     player.forward();
                 }
                 BeginMode3D(camera);
