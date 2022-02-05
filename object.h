@@ -12,11 +12,14 @@ class Object {
         float z;
         const char* type;
         bool visible;
-    Object(Vector3 pos, float z, Vector3 dim, bool visible, const char* type, Model model) {
+        float offsetY;
+
+    Object(Vector3 pos, float z, float offsetY, Vector3 dim, bool visible, const char* type, Model model) {
         this->pos = pos;
         this->model = model;
         this->dim = dim;
         this->z = z;
+        this->offsetY = offsetY;
         this->type = type;
         this->visible = visible;
         this->vpos = {0.0f,0.0f,0.0f};

@@ -19,8 +19,18 @@ vector<Entity> generate(vector<Entity> entities, map<string, Texture2D> textures
                 if (perlin2d(i,j,0.1,1) > 0.8f) {
                     
                         vector<Texture2D> texs;
+                       /* int r = rand() % 2;
+                        if (r == 0) {
+                            texs.push_back(textures["spruce"]);
+                        }
+                        else if (r == 1) {
+                            texs.push_back(textures["pine"]);
+                        }
+                        else {
+                            texs.push_back(textures["oak"]);
+                        }*/
                         texs.push_back(textures["spruce"]);
-                        entities.push_back(Entity(rand(), 0, "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,0.0f,(float) j - ENTITYDIST - offsetZ}, -1,{0.4f,0.25f,0.1f}, 1.0f, texs));
+                        entities.push_back(Entity(rand(), 0, "tree", "scenery", 0.0f, {(float)i - 16.0 + offsetX,8.0f,(float) j - ENTITYDIST - offsetZ}, -1,{0.4f,0.25f,0.1f}, 10.0f, texs));
                 }
             }
         }

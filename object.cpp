@@ -18,7 +18,7 @@ int Object::getHp() {
 }
 void Object::render(Camera camera) {
             if (this->visible)
-                DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
+                DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2 + this->offsetY, this->pos.z+ this->dim.z/2},
                         0.5f, BROWN);
 
 }

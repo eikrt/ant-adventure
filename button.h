@@ -16,7 +16,7 @@ class Button {
             this->pos = pos;
             this->status = 0;
             this->textures = textures;
-            this->selected;
+            this->selected = false;
             this->text = text;
             this->font = font;
         }

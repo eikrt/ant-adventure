@@ -23,9 +23,9 @@ const float SCENEDIST = 0.0f;
 #define CAMERAZ 15.0
 #define TARGETY 6.0
 #if defined(PLATFORM_DESKTOP)
-    #define GLSL_VERSION            330
+#define GLSL_VERSION            330
 #else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
-    #define GLSL_VERSION            100
+#define GLSL_VERSION            100
 #endif
 const float SCREENMARGIN_X = 256.0;
 const float SCREENMARGIN_Y = 64.0;
@@ -59,15 +59,15 @@ int main(int argc, char* argv[])
     SetTargetFPS(60);
 
     SetExitKey(KEY_DELETE);
-    
+
 
     // physics
     Camera camera = {
-            .position = {0.0f, CAMERAY, CAMERAZ},
-            .target   = {0.0f, TARGETY, 0.0f},
-            .up       = {0.0f, 1.0f, 0.0f},
-            .fovy     = 50.0f,
-            .projection = CAMERA_PERSPECTIVE
+        .position = {0.0f, CAMERAY, CAMERAZ},
+        .target   = {0.0f, TARGETY, 0.0f},
+        .up       = {0.0f, 1.0f, 0.0f},
+        .fovy     = 50.0f,
+        .projection = CAMERA_PERSPECTIVE
     };
     float cvx = 0.0f;
     float cvy = 0.0f;
@@ -86,6 +86,8 @@ int main(int argc, char* argv[])
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
     textures["roboant"] = LoadTexture("res/mechant.png");
     textures["spruce"] = LoadTexture("res/spruce.png");
+    textures["pine"] = LoadTexture("res/pine.png");
+    textures["oak"] = LoadTexture("res/oak.png");
     textures["stone_brick_dark"] = LoadTexture("res/medieval_stone_bricks_dark.png");
     textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_dark.png");
     textures["grass"] = LoadTexture("res/grass.png");
@@ -122,111 +124,129 @@ int main(int argc, char* argv[])
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
     texs.push_back(textures["egg"]);
-    
+
     Entity player(0, 20, "player", "player", 5.0f, {0.5f,8.0f,SCENEDIST},SCENEDIST,{0.4f,0.5f,0.1f}, 1.0f, texs);
     int currentLevel = 2;
     // levels
     int chunkX = 0, chunkY = 0;
     // start position
-    
+
     vector<Scenery> scenes;
-    
-    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, models["ground"], textures));
+    int currentScene = 0;
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, SKYBLUE, models["ground"], textures));
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     int chunkW = 2;
     int chunkH = 2;
     // shaders
-        Shader alphaDiscard = LoadShader(NULL, "shaders/alpha_discard.fs");
-        map<const char*, Shader> postShaders;
-        postShaders["bloom"] = LoadShader(0, TextFormat("shaders/bloom.fs"));
-        postShaders["pixelizer"] = LoadShader(0, TextFormat("shaders/pixelizer.fs"));
-        postShaders["posterization"] = LoadShader(0, TextFormat("shaders/posterization.fs"));
-        map<const char*, Shader> shaders;
-        shaders["default"] = LoadShader(TextFormat("shaders/base_lightning.vs"), TextFormat("shaders/lightning.fs"));
-        shaders["default"].locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shaders["default"], "viewPos");
-        int ambientLoc = GetShaderLocation(shaders["default"], "ambient");
-        float dim[4] = {0.2f,0.2f,0.2f,0.2f};
-        SetShaderValue(shaders["default"], ambientLoc, dim, SHADER_UNIFORM_VEC4);
+    Shader alphaDiscard = LoadShader(NULL, "shaders/alpha_discard.fs");
+    map<const char*, Shader> postShaders;
+    postShaders["bloom"] = LoadShader(0, TextFormat("shaders/bloom.fs"));
+    postShaders["pixelizer"] = LoadShader(0, TextFormat("shaders/pixelizer.fs"));
+    postShaders["posterization"] = LoadShader(0, TextFormat("shaders/posterization.fs"));
+    map<const char*, Shader> shaders;
+    shaders["default"] = LoadShader(TextFormat("shaders/base_lightning.vs"), TextFormat("shaders/lightning.fs"));
+    shaders["default"].locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shaders["default"], "viewPos");
+    int ambientLoc = GetShaderLocation(shaders["default"], "ambient");
+    float dim[4] = {0.2f,0.2f,0.2f,0.2f};
+    SetShaderValue(shaders["default"], ambientLoc, dim, SHADER_UNIFORM_VEC4);
 
-        Light lights[4] = { 0 };
-        lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), {215,215,190,255}, shaders["default"]);
-        lights[0].enabled = true;
+    Light lights[4] = { 0 };
+    lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), {215,215,190,255}, shaders["default"]);
+    lights[0].enabled = true;
     vector<Level> levels;
     levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
     levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
     startLevel(camera,player,levels[currentLevel],levels,currentLevel);
-        for (auto &m : models) {
-            m.second.materials[0].shader = shaders["default"];
+    for (auto &m : models) {
+        m.second.materials[0].shader = shaders["default"];
+    }
+    //models["cube_0"].materials[0].shader = shaders["default"];
+    while (!WindowShouldClose())
+    {
+        float delta = GetFrameTime() * 1000.0f;
+        if (currentMode == mainMenu) {
+            camera.position.x += 1 * delta / 1000;
+            camera.target.x += 1 * delta / 1000;
+            if (IsKeyPressed(KEY_S)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
+                if (selectedButton < mainMenuButtons.size() - 1) {
+                    selectedButton+=1;
+
+                }
+            }
+            if (IsKeyPressed(KEY_W)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
+                if (selectedButton > 0) {
+                    selectedButton-=1;
+                }
+            }
+            if (IsKeyPressed(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
+                if (selectedButton == 0) {
+                    currentMode = game;
+                }
+                if (selectedButton == 1) {
+                    exit(0);
+                }
+            }
+
+            ClearBackground(scenes[currentScene].skyColor);
+            BeginMode3D(camera);
+            BeginShaderMode(alphaDiscard);
+            scenes[currentScene].render(camera);
+            EndMode3D();
+            EndShaderMode(); 
+            BeginDrawing();
+            for (auto& b : mainMenuButtons) {
+
+                b.tick();
+            }
+            mainMenuButtons[selectedButton].selected = true;
+            for (auto& b : mainMenuButtons) {
+
+                b.render(camera);
+            }
+            DrawTextEx(fonts[0], "Ant Adventure", {16,16},18, 2, {255,255,255, 255});
+            EndDrawing();
         }
-        //models["cube_0"].materials[0].shader = shaders["default"];
-        while (!WindowShouldClose())
-        {
-            float delta = GetFrameTime() * 1000.0f;
-            if (currentMode == mainMenu) {
-                if (IsKeyDown(KEY_DOWN)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-                    if (selectedButton < mainMenuButtons.size() - 1) {
-                        selectedButton+=1;
-                        
-                    }
-                }
-                if (IsKeyDown(KEY_UP)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-                    if (selectedButton > 0) {
-                        selectedButton-=1;
-                    }
-                }
-                if (IsKeyDown(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-                    if (selectedButton == 0) {
-                        currentMode = game;
-                    }
-                }
-            BeginDrawing();
-                ClearBackground(BROWN);
-                mainMenuButtons[selectedButton].selected = true;
-                for (auto& b : mainMenuButtons) {
+        else if (currentMode == gameOver) {
+            if (IsKeyDown(KEY_DOWN)) {
+                if (selectedButton < gameOverButtons.size() - 1) {
+                    selectedButton+=1;
 
-                    b.render(camera);
-                    b.tick();
                 }
-                DrawTextEx(fonts[0], "Ant Adventure", {16,16},18, 2, {255,255,255, 255});
-                EndDrawing();
             }
-            else if (currentMode == gameOver) {
-                if (IsKeyDown(KEY_DOWN)) {
-                    if (selectedButton < gameOverButtons.size() - 1) {
-                        selectedButton+=1;
-                        
-                    }
+            if (IsKeyDown(KEY_UP)) {
+                if (selectedButton > 0) {
+                    selectedButton-=1;
                 }
-                if (IsKeyDown(KEY_UP)) {
-                    if (selectedButton > 0) {
-                        selectedButton-=1;
-                    }
-                }
-                if (IsKeyDown(KEY_SPACE)) {
-                    if (selectedButton == 0) {
-                        exit(0);
-                    }
-                }
-            BeginDrawing();
-                ClearBackground(RAYWHITE);
-                gameOverButtons[selectedButton].selected = true;
-                for (auto& b : gameOverButtons) {
-
-                    b.render(camera);
-                    b.tick();
-                }
-                EndDrawing();
-
             }
-            else if (currentMode == game) {
+            if (IsKeyDown(KEY_SPACE)) {
+                if (selectedButton == 0) {
+                    exit(0);
+                }
+            }
+            BeginMode3D(camera);
+            BeginShaderMode(alphaDiscard);
+            scenes[currentScene].render(camera);
+            EndMode3D();
+            EndShaderMode(); 
+            BeginDrawing();
+            gameOverButtons[selectedButton].selected = true;
+            for (auto& b : gameOverButtons) {
+
+                b.render(camera);
+                b.tick();
+            }
+            EndDrawing();
+
+        }
+        else if (currentMode == game) {
             UpdateCamera(&camera);
             for (auto &l : lights) {
                 UpdateLightValues(shaders["default"], l);
 
             }
-                float shaderPos[3] = {camera.position.x, camera.position.y, camera.position.z};
-                SetShaderValue(shaders["default"], shaders["default"].locs[SHADER_LOC_VECTOR_VIEW], shaderPos, SHADER_UNIFORM_VEC3);
+            float shaderPos[3] = {camera.position.x, camera.position.y, camera.position.z};
+            SetShaderValue(shaders["default"], shaders["default"].locs[SHADER_LOC_VECTOR_VIEW], shaderPos, SHADER_UNIFORM_VEC3);
 
 
 
@@ -258,7 +278,7 @@ int main(int argc, char* argv[])
                 chunkY = ceil((levels[currentLevel].levelSize - player.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
             //chunkX = 2;
             //chunkY = 1;
-                //chunkY = ceil(player.pos.y / levels[currentLevel].chunkSize);
+            //chunkY = ceil(player.pos.y / levels[currentLevel].chunkSize);
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
@@ -273,23 +293,23 @@ int main(int argc, char* argv[])
             if (player.nextLevel) {
                 exit(0);
             }
-                int chunkWa = chunkX - chunkW;
-                int chunkWb = chunkX + chunkW;
-                int chunkHa = chunkY - chunkH;
-                int chunkHb = chunkY + chunkH;
-                if (chunkWa < 0) {
-                    chunkWa = 0;
-                }
-                if (chunkHa < 0) {
-                    chunkHa = 0;
-                }
-                if (chunkWb > levels[currentLevel].levelSize) {
-                    chunkWb = levels[currentLevel].levelSize;
-                }
-                if (chunkHb > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
-                    chunkHb = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
-                }
-                for (int i = chunkHa; i < chunkHb; i++){
+            int chunkWa = chunkX - chunkW;
+            int chunkWb = chunkX + chunkW;
+            int chunkHa = chunkY - chunkH;
+            int chunkHb = chunkY + chunkH;
+            if (chunkWa < 0) {
+                chunkWa = 0;
+            }
+            if (chunkHa < 0) {
+                chunkHa = 0;
+            }
+            if (chunkWb > levels[currentLevel].levelSize) {
+                chunkWb = levels[currentLevel].levelSize;
+            }
+            if (chunkHb > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                chunkHb = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+            }
+            for (int i = chunkHa; i < chunkHb; i++){
                 for (int j = chunkWa; j < chunkWb; j++){
                     for (auto &e : levels[currentLevel].chunks[i][j].entities) {
                         if (e.getHp() <= 0) {
@@ -304,7 +324,7 @@ int main(int argc, char* argv[])
                         e.tick(delta);
                     }
                 }
-                }
+            }
             for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
                 if (obj.getHp() <= 0) {
                     continue;
@@ -317,11 +337,11 @@ int main(int argc, char* argv[])
                 }
                 player.collision_entity(delta, e);
             }
-           // player.collision_object(ground);
+            // player.collision_object(ground);
             //player.collision_object(cube);
             BeginTextureMode(target);
             {
-                ClearBackground(SKYBLUE);
+                ClearBackground(scenes[currentScene].skyColor);
 
                 if (IsKeyPressed(KEY_SPACE) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
                     if (player.mode == string("normal")) {
@@ -351,13 +371,13 @@ int main(int argc, char* argv[])
                     if(player.mode == string("ladder")) {
                         player.vpos.y = 0;
                     }
-                    
+
                 }
                 if (IsKeyReleased(KEY_S)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                     if(player.mode == string("ladder")) {
                         player.vpos.y= 0;
                     }
-                    
+
                 }
                 if (IsKeyDown(KEY_S)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
                     if(player.mode == string("ladder")) {
@@ -374,7 +394,7 @@ int main(int argc, char* argv[])
                 }
                 if ((!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))||(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT && IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)))){
                     if (player.mode == string("normal") || (player.mode == string("jump") ||player.mode == string("ladder")))
-                    player.slowX(delta);
+                        player.slowX(delta);
                 }
                 if (IsKeyPressed(KEY_X)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1)) {
                     player.back();
@@ -385,39 +405,39 @@ int main(int argc, char* argv[])
                 BeginMode3D(camera);
                 for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
                     for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
-                    for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
+                        for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
 
-                        if (obj.getHp() <= 0) {
-                            continue;
+                            if (obj.getHp() <= 0) {
+                                continue;
+                            }
+                            obj.render(camera);
                         }
-                        obj.render(camera);
-                    }
                     }
                 }
                 BeginShaderMode(alphaDiscard);
                 for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
                     for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
-                    for (auto &e : levels[currentLevel].chunks[i][j].entities) {
+                        for (auto &e : levels[currentLevel].chunks[i][j].entities) {
 
-                    if (e.getHp() <= 0) {
-                        continue;
+                            if (e.getHp() <= 0) {
+                                continue;
+                            }
+                            e.render(camera);
+                        }
                     }
-                    e.render(camera);
                 }
-                    }
-                }
-                for (auto &s : scenes) {
-                    s.render(camera);
-                }
-            EndShaderMode(); 
-            player.render(camera);
-            EndMode3D();
-            EndTextureMode();
+                
+                scenes[currentScene].render(camera);
+                
+                EndShaderMode(); 
+                player.render(camera);
+                EndMode3D();
+                EndTextureMode();
 
-        }
-        BeginDrawing();
-           // BeginShaderMode(postShaders["posterization"]);
-                DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
+            }
+            BeginDrawing();
+            // BeginShaderMode(postShaders["posterization"]);
+            DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
             //EndShaderMode();
             if (levelAlpha > 0) {
                 levelAlpha -= 2;
@@ -427,17 +447,17 @@ int main(int argc, char* argv[])
             }
             // level texts
             if (levelAlpha > 0) {
-            DrawTextEx(fonts[0], levels[currentLevel].title.c_str(), {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
+                DrawTextEx(fonts[0], levels[currentLevel].title.c_str(), {screenWidth / 2 - 16,screenHeight / 2},18, 2, {255,255,255, levelAlpha});
             }
             // hud
             DrawFPS(0,0);
             DrawTextEx(fonts[0], (string("Leafs: ") + to_string(player.coins)).c_str(), {screenWidth - 90,screenHeight - 16},18, 2, {255,255,255, 255});
             DrawTextEx(fonts[0], (string("Tokens: ") + to_string(player.tokens)).c_str(), {screenWidth - 200,screenHeight - 16},18, 2, {255,255,255, 255});
             DrawTextEx(fonts[0], (string("Artifacts: ") + to_string(player.artifacts.size())).c_str(), {screenWidth - 325,screenHeight - 16},18, 2, {255,255,255, 255});
-        EndDrawing();
+            EndDrawing();
+        }
     }
-    }
-    
+
 
     // end stuff
     for (auto const& t : textures) {

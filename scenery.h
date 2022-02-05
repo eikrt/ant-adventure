@@ -15,12 +15,14 @@ class Scenery {
         Model model;
         vector<Entity> entities;
     public: 
-    Scenery(Vector3 pos, Vector3 dim, Model model, map<string, Texture2D> textures) {
+        Color skyColor;
+    Scenery(Vector3 pos, Vector3 dim, Color skyColor, Model model, map<string, Texture2D> textures) {
         this->pos = pos;
         this->model = model;
         this->dim = dim;
         this->vpos = {0.0f,0.0f,0.0f};
         this->entities = generate(entities, textures);
+        this->skyColor = skyColor;
     }
     Vector3 getPos();
     Vector3 getVpos();

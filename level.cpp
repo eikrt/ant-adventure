@@ -30,22 +30,22 @@ void Level::initLevel() {
                             z = 2.0;
                         } 
                         if (this->bytes[k][i * levelSize + j] == '|'){
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, false,"cube", this->models["stone_brick_dark"]));
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, 0.0f, {1.0f,1.0f,1.0f}, false,"cube", this->models["stone_brick_dark"]));
                         }
                         if (this->bytes[k][i * levelSize + j] == '1'){
                             float f = (float)rand()/(float)(RAND_MAX/0.2);
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z + f},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_dark"]));
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z + f},z, 0.0f,{1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_dark"]));
                         }
                         if (this->bytes[k][i * levelSize + j] == '2'){
                             float fz = (float)rand()/(float)(RAND_MAX/0.2);
                             float fy = (float)rand()/(float)(RAND_MAX/0.1);
 ;
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y + fy,z + fz},z, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_light"]));
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z + fz},z, fy, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_light"]));
                         }
 
                         if (this->bytes[k][i * levelSize + j] == 'f'){
                             float f = (float)rand()/(float)(RAND_MAX/0.2);
-                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, {1.0f,1.0f,1.0f}, true, "floor", this->models["stone_brick_light"]));
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, 0.0, {1.0f,1.0f,1.0f}, true, "floor", this->models["stone_brick_light"]));
                         }
 
                         if (this->bytes[k][i * levelSize + j] == 'r') {

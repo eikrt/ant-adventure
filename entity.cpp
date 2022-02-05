@@ -149,7 +149,7 @@ void Entity::collision_object(float delta, Object& object) {
     float oBottomY = object.getPos().y - object.getDim().y;
     if (this->z == object.z) { 
     if (vpos.y <= 0 && eBottomY  <= oTopY
-            && eBottomY >= oBottomY
+            && eBottomY >= oBottomY + 0.2
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX + 0.2) {
         if (object.visible) {
@@ -249,7 +249,7 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
         this->collisionAction(delta, otherEntity, "down");
     }
     if (
-            ePosY > otherEntity.getPos().y &&
+            ePosY > eTopY &&
             ePosY  < oTopY &&
             eRightX >= otherEntity.getPos().x &&
             eRightX <= oRightX)
@@ -257,7 +257,7 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
         this->collisionAction(delta, otherEntity, "side");
     }
     if (
-            ePosY > otherEntity.getPos().y &&
+            ePosY > oTopY &&
             ePosY < oTopY &&
             eLeftX >= otherEntity.getPos().x &&
             eLeftX <= oRightX)
@@ -287,10 +287,10 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
                 this->jump(1.5);
             }
             if (string(otherEntity.type) == "belt_left") {
-                this->vpos.x -= 20 * delta / 1000;
+                this->vpos.x -= 80 * delta / 1000;
             }
             if (string(otherEntity.type) == "belt_right") {
-                this->vpos.x += 20 * delta / 1000;
+                this->vpos.x += 80 * delta / 1000;
             }
             if (string(otherEntity.type) == "door_next_level") {
                 if (IsKeyPressed(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP))
