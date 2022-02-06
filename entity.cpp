@@ -31,7 +31,7 @@ void Entity::tick(float delta) {
         this->jump(1.0f);
     }
     if (this->type == string("fungus_monster_higher")) {
-        this->jump(3.0f);
+        this->jump(1.5f);
     }
     if (this->moveMode == string("normal")) {
         if (this->category == string("carriable")) {
