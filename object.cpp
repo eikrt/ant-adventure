@@ -2,7 +2,25 @@
 #include <raylib.h>
 #include <iostream>
 using namespace std;
-void Object::tick(float gravity) {
+void Object::tick(float delta) {
+    if (this->type == string("moving_cube_up")) {
+        if (this->pos.y <= this->startPos.y + 2.0f) {
+            this->vpos.y += 0.5f;
+        } 
+        else if (this->pos.y > this->startPos.y - 2.0f) {
+            this->vpos.y -= 0.5f;
+        } 
+    }
+    if (this->type == string("moving_cube_side")) {
+        if (this->pos.x <= this->startPos.x + 2.0f) {
+            this->vpos.x += 0.1f;
+        } 
+        else if (this->pos.x > this->startPos.x - 2.0f) {
+            this->vpos.x -= 0.1f;
+        } 
+    }
+        this->pos.y += this->vpos.y * delta / 1000;
+        this->pos.x += this->vpos.x * delta / 1000;
 }
 Vector3 Object::getVpos() {
     return this->vpos;

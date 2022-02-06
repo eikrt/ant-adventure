@@ -47,6 +47,14 @@ void Level::initLevel() {
                             float f = (float)rand()/(float)(RAND_MAX/0.2);
                             this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, 0.0, {1.0f,1.0f,1.0f}, true, "floor", this->models["stone_brick_light"]));
                         }
+                        if (this->bytes[k][i * levelSize + j] == '^'){
+                            float f = (float)rand()/(float)(RAND_MAX/0.2);
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, 0.0, {1.0f,1.0f,1.0f}, true, "moving_cube_up", this->models["stone_brick_dark"]));
+                        }
+                        if (this->bytes[k][i * levelSize + j] == '_'){
+                            float f = (float)rand()/(float)(RAND_MAX/0.2);
+                            this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z},z, 0.0, {1.0f,1.0f,1.0f}, true, "moving_cube_side", this->models["stone_brick_dark"]));
+                        }
 
                         if (this->bytes[k][i * levelSize + j] == 'r') {
                             vector<Texture2D> texs;
@@ -54,6 +62,24 @@ void Level::initLevel() {
 
                             Entity entity = Entity(rand(), 0.01, "roboant", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             entity.left();
+                            this->chunks[h][n].entities.push_back(entity);
+
+
+                        }
+                        if (this->bytes[k][i * levelSize + j] == '[') {
+                            vector<Texture2D> texs;
+                            texs.push_back(this->textures["fungus_monster"]);
+
+                            Entity entity = Entity(rand(), 30.0f, "fungus_monster", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->chunks[h][n].entities.push_back(entity);
+
+
+                        }
+                        if (this->bytes[k][i * levelSize + j] == ']') {
+                            vector<Texture2D> texs;
+                            texs.push_back(this->textures["fungus_monster"]);
+
+                            Entity entity = Entity(rand(), 30.0f, "fungus_monster_higher", "enemy", 3.0f, {(float)x+0.5f,y+0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->chunks[h][n].entities.push_back(entity);
 
 

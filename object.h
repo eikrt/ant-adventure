@@ -5,6 +5,7 @@
 class Object {
     public: 
         Vector3 pos;
+        Vector3 startPos;
         Vector3 vpos;
         Vector3 dim;
         Model model;
@@ -16,6 +17,7 @@ class Object {
 
     Object(Vector3 pos, float z, float offsetY, Vector3 dim, bool visible, const char* type, Model model) {
         this->pos = pos;
+        this->startPos = pos;
         this->model = model;
         this->dim = dim;
         this->z = z;
@@ -30,7 +32,7 @@ class Object {
     Vector3 getDim();
     int getHp();
     void render(Camera camera);
-    void tick(float gravity);
+    void tick(float delta);
     void collision(float gravity);
 };
 #endif

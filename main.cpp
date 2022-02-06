@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     textures["stone_brick_dark"] = LoadTexture("res/medieval_stone_bricks_dark.png");
     textures["stone_brick_light"] = LoadTexture("res/medieval_stone_bricks_dark.png");
     textures["grass"] = LoadTexture("res/grass.png");
-    textures["fungus"] = LoadTexture("res/fungus_monster.png");
+    textures["fungus_monster"] = LoadTexture("res/fungus_monster.png");
     textures["bird"] = LoadTexture("res/stinger.png");
     textures["egg"] = LoadTexture("res/ant_egg_4.png");
     textures["coin"] = LoadTexture("res/leaf.png");
@@ -308,6 +308,12 @@ int main(int argc, char* argv[])
                 chunkX = ceil(player.pos.x / (float)levels[currentLevel].chunkSize) -1 ;
             if (levels[currentLevel].levelSize - player.pos.y < levels[currentLevel].levelSize && player.pos.y > 0)
                 chunkY = ceil((levels[currentLevel].levelSize - player.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
+            if (chunkX < 0) {
+                chunkX = 0;
+            }
+            if (chunkY < 0) {
+                chunkY = 0;
+            }
             //chunkX = 2;
             //chunkY = 1;
             //chunkY = ceil(player.pos.y / levels[currentLevel].chunkSize);
@@ -339,6 +345,12 @@ int main(int argc, char* argv[])
             }
             if (chunkHa < 0) {
                 chunkHa = 0;
+            }
+            if (chunkWb < 0) {
+                chunkWb = 0;
+            }
+            if (chunkHb < 0) {
+                chunkHb = 0;
             }
             if (chunkWb > levels[currentLevel].levelSize) {
                 chunkWb = levels[currentLevel].levelSize;
@@ -451,6 +463,12 @@ int main(int argc, char* argv[])
 
             for (int i = chunkHa; i < chunkHb; i++){
                 for (int j = chunkWa; j < chunkWb; j++){
+                        for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
+                            if (obj.getHp() <= 0){
+                                continue;
+                            }
+                            obj.tick(delta);
+                        }
                     for (auto &e : levels[currentLevel].chunks[i][j].entities) {
                         if (e.getHp() <= 0) {
                             continue;
@@ -465,6 +483,7 @@ int main(int argc, char* argv[])
                     }
                 }
             }
+            
             for (auto &obj : levels[currentLevel].chunks[chunkY][chunkX].objects) {
                 if (obj.getHp() <= 0) {
                     continue;

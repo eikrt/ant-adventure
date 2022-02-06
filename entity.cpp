@@ -27,6 +27,12 @@ void Entity::collectCoin(int value) {
     this->coins += value;
 }
 void Entity::tick(float delta) {
+    if (this->type == string("fungus_monster")) {
+        this->jump(1.0f);
+    }
+    if (this->type == string("fungus_monster_higher")) {
+        this->jump(3.0f);
+    }
     if (this->moveMode == string("normal")) {
         if (this->category == string("carriable")) {
             this->slowX(delta); 
