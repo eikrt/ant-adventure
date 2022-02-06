@@ -23,7 +23,7 @@ class Entity {
         Vector3 dim;
         const char* type;
         const char* category;
-        string mode;
+        string moveMode;
         float rot;
         float cannonChange;
         float cannonTime;
@@ -34,8 +34,14 @@ class Entity {
         float gravity;
         bool nextLevel;
         float z;
+        Vector3 carrierPos;
+        bool carried;
+        int carrierId;
     Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, float z, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
+        this->carrierPos = Vector3({0.0f,0.0f,0.0f});
+        this->carried = false;
+        this->carrierId = -1;
         this->texs = texs;
         this->dim = dim;
         this->z = z;
@@ -46,7 +52,7 @@ class Entity {
         this->id = id;
         this->type = type;
         this->category = category;
-        this->mode = "normal";
+        this->moveMode = "normal";
         this->rot = 0.0;
         this->launchSpeed = 9.0f;
         this->cannonTime = 500;

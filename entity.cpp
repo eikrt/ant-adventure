@@ -26,7 +26,12 @@ void Entity::damage() {
 void Entity::collectCoin(int value) {
     this->coins += value;
 }
-void Entity::tick(float delta){
+void Entity::tick(float delta) {
+    if (this->moveMode == string("normal")) {
+        if (this->category == string("carriable")) {
+            this->slowX(delta); 
+        }
+    }
     if (this->pos.y < 0) {
         this->damage();
     }
@@ -37,14 +42,14 @@ void Entity::tick(float delta){
         this->pos.x += cos(this->rot)  * delta * this->speed / 1000;
         this->pos.y += sin(this->rot)  * delta * this->speed / 1000;
     }
-    if (this->mode == string("cannon")) {
+    if (this->moveMode == string("cannon")) {
         this->cannonChange += 10;
         if (this->cannonChange > this->cannonTime) {
             this-> cannonChange = 0;
             this->launch();
         }
     }
-    if ( !this->blockedDown && (this->mode != string("cannon") && this->mode != string("ladder"))) {
+    if ( !this->blockedDown && (this->moveMode != string("cannon") && this->moveMode != string("ladder"))) {
         this->vpos.y -= this->gravity * delta / 1000;
     }
     if (this->type != string("bird"))
@@ -58,36 +63,40 @@ void Entity::tick(float delta){
     this-> blockedLeft = false;
     this->blockedDown = false;
     this->blockedUp = false;
-    if (this->mode == string("ladder")) {
-        this->mode = string("normal");
+    if (this->moveMode == string("ladder")) {
+        this->moveMode = string("normal");
+    }
+
+    if (this->carried) {
+        this->pos = carrierPos;
     }
 }
 void Entity::jump(float f) {
     if (blockedDown) {
-        this->mode = string("jump");
+        this->moveMode = string("jump");
         this->vpos.y = JUMP_STRENGTH * f;
     }
 }
 void Entity::cannon() {
-    this->mode = string("cannon");
+    this->moveMode = string("cannon");
     this->rot = 3.14/2;
     this->stopX();
     this->vpos.y = 0.0f;
 }
 void Entity::launch() {
     this->cannonChange = 0;
-    this->mode = string("flying");
+    this->moveMode = string("flying");
     this->vpos.x += cos(this->rot) * this->launchSpeed;
     this->vpos.y += sin(this->rot) * this->launchSpeed;
 }
 void Entity::left() {
     blockedRight = false;
-    if (!blockedLeft && this->mode != string("cannon"))
+    if (!blockedLeft && this->moveMode != string("cannon"))
     this->vpos.x = -this->speed;
 }
 void Entity::right() {
     blockedLeft = false;
-    if (!blockedRight && this->mode != string("cannon"))
+    if (!blockedRight && this->moveMode != string("cannon"))
     this->vpos.x = this->speed;
 }
 void Entity::forward() {
@@ -113,7 +122,7 @@ void Entity::stopX() {
 }
 void Entity::stopY() {
     this->vpos.y = 0.0f;
-    this->mode = string("normal");
+    this->moveMode = string("normal");
 }
 void Entity::stopZ() {
     this->vpos.z = 0.0f;
@@ -212,6 +221,9 @@ void Entity::collision_object(float delta, Object& object) {
     }
 }
 void Entity::collision_entity(float delta, Entity& otherEntity) {
+    if (this->moveMode == string("open")) {
+        return;
+    }
     float ePosX = this->pos.x+this->vpos.x*delta/1000;
     float ePosY = this->pos.y+this->vpos.y*delta/1000;
     float eRightX = ePosX + this->dim.x;
@@ -292,6 +304,13 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
             if (string(otherEntity.type) == "belt_right") {
                 this->vpos.x += 80 * delta / 1000;
             }
+            if (string(otherEntity.category) == "carriable") {
+
+                if (IsKeyPressed(KEY_E)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_RIGHT_FACE_LEFT)) {
+                    otherEntity.carried = true; 
+                    otherEntity.carrierId = this->id;
+                }
+            }
             if (string(otherEntity.type) == "door_next_level") {
                 if (IsKeyPressed(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP))
                     this->nextLevel = true; 
@@ -313,29 +332,37 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
                 otherEntity.damage();
             }
             if (string(otherEntity.type) == "ladder") {
-                this->mode="ladder";
+                this->moveMode="ladder";
             }
 
             }
+            if (this->type == string("key_door")) {
+                if (string(otherEntity.type) == "key") {
+                    this->moveMode = "open";
+                    this->hp = -1;
+                    otherEntity.hp = -1;
+                } 
+                
+            }
 }
 void Entity::render(Camera camera) {
-            if (mode == string("normal")) {
+            if (moveMode == string("normal")) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
-            else if (mode == string("jump")) {
+            else if (moveMode == string("jump")) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
-            else if (mode == string("flying")) {
+            else if (moveMode == string("flying")) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
-            else if (mode == string("ladder")) {
+            else if (moveMode == string("ladder")) {
                 DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
-            else if (mode == string("cannon")) {
+            else if (moveMode == string("cannon")) {
                 DrawSphere({this->pos.x + cos(this->rot) * 1.0, this->pos.y + sin(this->rot) * 1.0, this->pos.z}, 0.1, RED);
                 DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
             }
-            else if (mode == string("locked")) {
+            else if (moveMode == string("locked")) {
                 DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
            }
 }

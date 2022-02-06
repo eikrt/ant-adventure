@@ -95,7 +95,7 @@ void Level::initLevel() {
                             texs.push_back(this->textures["door_next_level"]);
                             texs.push_back(this->textures["door_next_level_locked"]);
                             Entity entity = Entity(rand(), 0, "door_next_level", "prop", 0.03f, {(float)x + 0.5,y+0.5f + 0.2f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
-                            entity.mode = string("locked");
+                            entity.moveMode = string("locked");
 
                             this->chunks[h][n].entities.push_back(entity);
 
@@ -169,6 +169,22 @@ void Level::initLevel() {
                             vector<Texture2D> texs;
                             texs.push_back(this->textures["spike"]);
                             Entity entity = Entity(rand(), 0, "spike", "prop", 0.00f, {(float)x + 0.5f,y + 0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->chunks[h][n].entities.push_back(entity);
+
+
+                        }
+                        if (this->bytes[k][i * levelSize + j] == '+') {
+                            vector<Texture2D> texs;
+                            texs.push_back(this->textures["key"]);
+                            Entity entity = Entity(rand(), 10.0f, "key", "carriable", 0.00f, {(float)x + 0.5f,y + 0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->chunks[h][n].entities.push_back(entity);
+
+
+                        }
+                        if (this->bytes[k][i * levelSize + j] == '-') {
+                            vector<Texture2D> texs;
+                            texs.push_back(this->textures["key_door"]);
+                            Entity entity = Entity(rand(), 0, "key_door", "prop", 0.00f, {(float)x + 0.5f,y + 0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
                             this->chunks[h][n].entities.push_back(entity);
 
 

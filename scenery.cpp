@@ -15,6 +15,7 @@ Vector3 Scenery::getDim() {
     return this->dim;
 }
 void Scenery::render(Camera camera) {
+                this->skyboxes[0].render(camera);
                 DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2, this->pos.z+ this->dim.z/2},
                         0.5f, GREEN);
                 for (Entity e : this->entities) {

@@ -10,6 +10,7 @@
 #include "object.h"
 #include "entity.h"
 #include "monster.h"
+#include "skybox.h"
 #include "chunk.h"
 using namespace std;
 class Level {
@@ -24,7 +25,8 @@ class Level {
         map<string, Texture2D> textures;
         int chunkSize;
         int levelSize;
-        Level(string title, string path, map<string,Model> models, map<string, Texture2D> textures) {
+        int blockers;
+        Level(string title, string path, map<string,Model> models, map<string, Texture2D> textures, int blockers) {
             this->chunkSize = 16;
             this->bytes.push_back(vector<char>());
             this->bytes.push_back(vector<char>());
@@ -33,6 +35,7 @@ class Level {
             this->models = models;
             this->textures = textures;
             this->title = title;
+            this->blockers = blockers;
             for (int i = 0; i < 4; i++) {
                 char byte = 0;
                 ifstream file(path + to_string(i)); 

@@ -5,6 +5,7 @@
 #include "button.h"
 #include "scenery.h"
 #include "level.h"
+#include "textpage.h"
 #include <vector>
 #include <map>
 #include <iostream>
@@ -42,14 +43,14 @@ void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> leve
     player.pos.y = levels[currentLevel].startPos.y;
     player.pos.z = levels[currentLevel].startPos.z + 0.5f;
     player.z = levels[currentLevel].startPos.z;
-    player.blockersLeft = 2; 
+    player.blockersLeft = level.blockers; 
 
 }
 int main(int argc, char* argv[])
 {
     setlocale(LC_ALL, "utf-8");
-    enum Mode {overworld, game, mainMenu, gameOver};
-    Mode currentMode = mainMenu;
+    enum moveMode {story, game, mainMenu, gameOver};
+    moveMode currentmoveMode = mainMenu;
     const int screenWidth = 1024;
     const int screenHeight = 576;
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
@@ -79,7 +80,7 @@ int main(int argc, char* argv[])
     int selectedButton = 0;
     map<string, Model> models;
     map<string, Texture2D> textures;
-    models["stone_brick_dark"] = LoadModel("models/cube_larger.obj");
+    models["stone_brick_dark"] = LoadModel("models/cube.obj");
     models["stone_brick_light"] = LoadModel("models/cube.obj");
     models["ground"] = LoadModel("models/scenery.obj");
 
@@ -105,9 +106,12 @@ int main(int argc, char* argv[])
     textures["belt"] = LoadTexture("res/belt.png");
     textures["door_next_level"] = LoadTexture("res/door_next_level.png");
     textures["door_next_level_locked"] = LoadTexture("res/door_next_level_locked.png");
+    textures["skybox_1"] = LoadTexture("res/sky_1.png");
     textures["mainMenuButton0"] = LoadTexture("res/menu_button.png");
     textures["mainMenuButton1"] = LoadTexture("res/menu_button_hovered.png");
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
+    textures["key"] = LoadTexture("res/key.png");
+    textures["key_door"] = LoadTexture("res/key_door.png");
     vector<Texture2D> buttonTextures;
     buttonTextures.push_back(textures["mainMenuButton0"]);
     buttonTextures.push_back(textures["mainMenuButton1"]);
@@ -126,14 +130,19 @@ int main(int argc, char* argv[])
     texs.push_back(textures["egg"]);
 
     Entity player(0, 20, "player", "player", 5.0f, {0.5f,8.0f,SCENEDIST},SCENEDIST,{0.4f,0.5f,0.1f}, 1.0f, texs);
-    int currentLevel = 2;
+    int currentLevel = 0;
     // levels
     int chunkX = 0, chunkY = 0;
     // start position
-
+    vector<TextPage> textPages;
+    TextPage startPage(string("text/start.txt"));
+    textPages.push_back(startPage);
+    TextPage level1Page(string("text/level_1.txt"));
+    textPages.push_back(level1Page);
     vector<Scenery> scenes;
-    int currentScene = 0;
-    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, SKYBLUE, models["ground"], textures));
+    int currentScene = 1;
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {105,117,178,255},{215,215,190,255}, models["ground"], textures));
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {126,105,180,255},{126,105,180,255}, models["ground"], textures));
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     int chunkW = 2;
     int chunkH = 2;
@@ -151,12 +160,13 @@ int main(int argc, char* argv[])
     SetShaderValue(shaders["default"], ambientLoc, dim, SHADER_UNIFORM_VEC4);
 
     Light lights[4] = { 0 };
-    lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), {215,215,190,255}, shaders["default"]);
+    lights[0] = CreateLight(LIGHT_POINT, (Vector3){ 10, 100, 10 }, Vector3Zero(), scenes[currentScene].lightColor, shaders["default"]);
     lights[0].enabled = true;
     vector<Level> levels;
-    levels.push_back(Level("Test Level", "levels/level_0_", models, textures));
-    levels.push_back(Level("Ruins", "levels/level_1_", models, textures));
-    levels.push_back(Level("Ruins", "levels/level_2_", models, textures));
+    levels.push_back(Level("Ruined entrance", "levels/level_0_", models, textures, 0));
+    levels.push_back(Level("Courtyard", "levels/level_1_", models, textures, 0));
+    levels.push_back(Level("Cellar", "levels/level_2_", models, textures, 0));
+    levels.push_back(Level("Armory", "levels/level_2_", models, textures, 0));
     startLevel(camera,player,levels[currentLevel],levels,currentLevel);
     for (auto &m : models) {
         m.second.materials[0].shader = shaders["default"];
@@ -165,7 +175,7 @@ int main(int argc, char* argv[])
     while (!WindowShouldClose())
     {
         float delta = GetFrameTime() * 1000.0f;
-        if (currentMode == mainMenu) {
+        if (currentmoveMode == mainMenu) {
             camera.position.x += 1 * delta / 1000;
             camera.target.x += 1 * delta / 1000;
             if (IsKeyPressed(KEY_S)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
@@ -181,7 +191,7 @@ int main(int argc, char* argv[])
             }
             if (IsKeyPressed(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
                 if (selectedButton == 0) {
-                    currentMode = game;
+                    currentmoveMode = story;
                 }
                 if (selectedButton == 1) {
                     exit(0);
@@ -207,7 +217,27 @@ int main(int argc, char* argv[])
             DrawTextEx(fonts[0], "Ant Adventure", {16,16},18, 2, {255,255,255, 255});
             EndDrawing();
         }
-        else if (currentMode == gameOver) {
+        else if (currentmoveMode == story) {
+            if (IsKeyPressed(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
+                currentmoveMode = game;
+                startLevel(camera,player,levels[currentLevel],levels,currentLevel);
+                levels[currentLevel].initLevel();
+
+            }
+            camera.position.x += 1 * delta / 1000;
+            camera.target.x += 1 * delta / 1000;
+            ClearBackground(scenes[currentScene].skyColor);
+            BeginMode3D(camera);
+            BeginShaderMode(alphaDiscard);
+            scenes[currentScene].render(camera);
+            EndMode3D();
+            EndShaderMode(); 
+            BeginDrawing();
+
+            DrawTextEx(fonts[0], textPages[currentLevel].text.c_str(), {32,32},18, 2, {255,255,255, 255});
+            EndDrawing();
+        }
+        else if (currentmoveMode == gameOver) {
             if (IsKeyDown(KEY_DOWN)) {
                 if (selectedButton < gameOverButtons.size() - 1) {
                     selectedButton+=1;
@@ -239,7 +269,7 @@ int main(int argc, char* argv[])
             EndDrawing();
 
         }
-        else if (currentMode == game) {
+        else if (currentmoveMode == game) {
             UpdateCamera(&camera);
             for (auto &l : lights) {
                 UpdateLightValues(shaders["default"], l);
@@ -274,11 +304,13 @@ int main(int argc, char* argv[])
             camera.position.y += cvy;
             if (player.pos.x < levels[currentLevel].levelSize && player.pos.x > 0)
                 chunkX = ceil(player.pos.x / (float)levels[currentLevel].chunkSize) -1 ;
-            if (levels[currentLevel].levelSize - player.pos.y < levels[currentLevel].levelSize &&player.pos.y > 0  )
+            if (levels[currentLevel].levelSize - player.pos.y < levels[currentLevel].levelSize && player.pos.y > 0)
                 chunkY = ceil((levels[currentLevel].levelSize - player.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
             //chunkX = 2;
             //chunkY = 1;
             //chunkY = ceil(player.pos.y / levels[currentLevel].chunkSize);
+
+            
             player.tick(delta);
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
@@ -287,11 +319,14 @@ int main(int argc, char* argv[])
             }
             if (player.blockersLeft <= 0) {
                 for (Entity &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
-                    e.mode = string("normal");
+                    e.moveMode = string("normal");
                 }
             }
             if (player.nextLevel) {
-                exit(0);
+                currentLevel += 1;
+                player.nextLevel = false;
+                currentmoveMode = story;
+                continue;
             }
             int chunkWa = chunkX - chunkW;
             int chunkWb = chunkX + chunkW;
@@ -309,6 +344,105 @@ int main(int argc, char* argv[])
             if (chunkHb > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
                 chunkHb = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
             }
+            for (int i = 0; i < levels[currentLevel].levelSize / levels[currentLevel].chunkSize; i++){
+                for (int j = 0; j < levels[currentLevel].levelSize / levels[currentLevel].chunkSize; j++){
+                    for (auto &e : levels[currentLevel].chunks[j][i].entities) {
+                        Entity entity = e;
+                        int cx = ceil(e.pos.x / (float)levels[currentLevel].chunkSize) - 1;
+                        int cy = ceil((levels[currentLevel].levelSize - e.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
+                        if (cx < 0) {
+                            cx = 0;
+                        }
+                        if (cy < 0) {
+                            cy = 0;
+                        }
+                        if (cx > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+
+                            cx = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                        }
+                        if (cy > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+                            cy = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                        }
+                        if (cx > i) {
+                            int sx = i + 1;
+                            int sy = j;
+                            if (sy > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                                sy = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+                            }
+                            if (sx > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                                sx = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+                            }
+                            if (sx < 0) {
+                                sx = 0;
+                            }
+                            if (sy < 0) {
+                                sy = 0;
+                            }
+                            levels[currentLevel].chunks[sy][sx].entities.push_back(e);
+                            e.hp = -1;
+                        }
+                        if (cx < i) {
+                            int sx = i - 1;
+                            int sy = j;
+                            if (sy > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+                                sy = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                            }
+                            if (sx > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+                                 
+                                sx = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                            }
+                            if (sx < 0) {
+                                sx = 0;
+                            }
+                            if (sy < 0) {
+                                sy = 0;
+                            }
+                            levels[currentLevel].chunks[sy][sx].entities.push_back(e);
+                            
+                            e.hp = -1;
+                        }
+                        if (cy > j) {
+                            int sx = i;
+                            int sy = j + 1;
+                            if (sy > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                                sy = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+                            }
+                            if (sx > levels[currentLevel].levelSize / levels[currentLevel].chunkSize) {
+                                sx = levels[currentLevel].levelSize / levels[currentLevel].chunkSize;
+                            }
+                            if (sx < 0) {
+                                sx = 0;
+                            }
+                            if (sy < 0) {
+                                sy = 0;
+                            }
+                            levels[currentLevel].chunks[sy][sx].entities.push_back(e);
+                            e.hp = -1;
+                        }
+                       if (cy < j) {
+                            int sx = i;
+                            int sy = j - 1;
+                            if (sy > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+                                sy = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                            }
+                            if (sx > levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1) {
+                                 
+                                sx = levels[currentLevel].levelSize / levels[currentLevel].chunkSize - 1;
+                            }
+                            if (sx < 0) {
+                                sx = 0;
+                            }
+                            if (sy < 0) {
+                                sy = 0;
+                            }
+                            levels[currentLevel].chunks[sy][sx].entities.push_back(e);
+                            
+                            e.hp = -1;
+                        }
+                    }
+                }
+            }
+
             for (int i = chunkHa; i < chunkHb; i++){
                 for (int j = chunkWa; j < chunkWb; j++){
                     for (auto &e : levels[currentLevel].chunks[i][j].entities) {
@@ -331,11 +465,41 @@ int main(int argc, char* argv[])
                 }
                 player.collision_object(delta, obj);
             }
+            if (IsKeyPressed(KEY_E)) {
+                for (auto &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
+                    if (e.getHp() <= 0) {
+                        continue;
+                    }
+                    if (e.carried) {
+                        if (player.id == e.carrierId) {
+                            e.moveMode = "throw";
+                            e.carried = false;
+                            e.vpos.x = 5.0f;
+                            e.pos.x = player.pos.x + 1.0f;
+                            e.pos.y = player.pos.y + 0.0f;
+
+                        }
+                    }
+                }
+
+            }
             for (auto &e : levels[currentLevel].chunks[chunkY][chunkX].entities) {
+                
                 if (e.getHp() <= 0) {
                     continue;
                 }
+                if (e.carried) {
+                    if (player.id == e.carrierId) {
+                        e.carrierPos = player.pos;
+                        e.pos = player.pos;
+                        e.pos.y = player.pos.y + 0.0f;
+                        e.pos.x = player.pos.x + 0.0f;
+                    }
+                }
                 player.collision_entity(delta, e);
+                for (auto &e2 : levels[currentLevel].chunks[chunkY][chunkX].entities) {
+                    e.collision_entity(delta,e2);
+                }
             }
             // player.collision_object(ground);
             //player.collision_object(cube);
@@ -344,56 +508,56 @@ int main(int argc, char* argv[])
                 ClearBackground(scenes[currentScene].skyColor);
 
                 if (IsKeyPressed(KEY_SPACE) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-                    if (player.mode == string("normal")) {
+                    if (player.moveMode == string("normal")) {
                         player.jump(1.0);
 
-                    } else if (player.mode == string("jump")) {
+                    } else if (player.moveMode == string("jump")) {
                         player.cannon();
                     }
-                    else if (player.mode == string("cannon")) {
+                    else if (player.moveMode == string("cannon")) {
                         player.launch();
                     }
                 }
                 if (IsKeyDown(KEY_D)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
-                    if (player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder"))
+                    if (player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder"))
                         player.right();
                 }
                 if (IsKeyDown(KEY_A)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-                    if(player.mode == string("jump") ||player.mode == string("normal") ||player.mode == string("ladder")) 
+                    if(player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder")) 
                         player.left();
                 }
                 if (IsKeyDown(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-                    if(player.mode == string("ladder")) {
+                    if(player.moveMode == string("ladder")) {
                         player.up();
                     }
                 }
                 if (IsKeyReleased(KEY_W)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-                    if(player.mode == string("ladder")) {
+                    if(player.moveMode == string("ladder")) {
                         player.vpos.y = 0;
                     }
 
                 }
                 if (IsKeyReleased(KEY_S)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-                    if(player.mode == string("ladder")) {
+                    if(player.moveMode == string("ladder")) {
                         player.vpos.y= 0;
                     }
 
                 }
                 if (IsKeyDown(KEY_S)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-                    if(player.mode == string("ladder")) {
+                    if(player.moveMode == string("ladder")) {
                         player.down();
                     }
                 }
                 if (IsKeyPressed(KEY_A) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-                    if(player.mode == string("cannon")) 
+                    if(player.moveMode == string("cannon")) 
                         player.tilt(3.14/4);
                 }
                 if (IsKeyPressed(KEY_D)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)) {
-                    if(player.mode == string("cannon")) 
+                    if(player.moveMode == string("cannon")) 
                         player.tilt(-3.14/4);
                 }
                 if ((!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))||(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT && IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)))){
-                    if (player.mode == string("normal") || (player.mode == string("jump") ||player.mode == string("ladder")))
+                    if (player.moveMode == string("normal") || (player.moveMode == string("jump") ||player.moveMode == string("ladder")))
                         player.slowX(delta);
                 }
                 if (IsKeyPressed(KEY_X)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1)) {
@@ -436,7 +600,7 @@ int main(int argc, char* argv[])
 
             }
             BeginDrawing();
-            // BeginShaderMode(postShaders["posterization"]);
+            // BeginShadermoveMode(postShaders["posterization"]);
             DrawTexturePro(target.texture, (Rectangle){0, 0, (float)WIDTH, (float)-HEIGHT},{0,0,(float)screenWidth, (float)screenHeight} ,Vector2{0, 0}, 0, WHITE);
             //EndShaderMode();
             if (levelAlpha > 0) {
