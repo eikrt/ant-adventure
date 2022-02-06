@@ -21,5 +21,8 @@ void Scenery::render(Camera camera) {
                 for (Entity e : this->entities) {
                     e.render(camera);
                 };
+                for (Object o : this->objects) {
+                    o.render(camera);
+                };
 
 }

@@ -112,6 +112,8 @@ int main(int argc, char* argv[])
     textures["mainMenuButton2"] = LoadTexture("res/menu_button_pressed.png");
     textures["key"] = LoadTexture("res/key.png");
     textures["key_door"] = LoadTexture("res/key_door.png");
+    textures["cloud_1"] = LoadTexture("res/cloud_1.png");
+    textures["cloud_2"] = LoadTexture("res/cloud_2.png");
     vector<Texture2D> buttonTextures;
     buttonTextures.push_back(textures["mainMenuButton0"]);
     buttonTextures.push_back(textures["mainMenuButton1"]);
@@ -141,8 +143,8 @@ int main(int argc, char* argv[])
     textPages.push_back(level1Page);
     vector<Scenery> scenes;
     int currentScene = 1;
-    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {105,117,178,255},{215,215,190,255}, models["ground"], textures));
-    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {126,105,180,255},{126,105,180,255}, models["ground"], textures));
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {105,117,178,255},{215,215,190,255}, models["ground"], textures, models));
+    scenes.push_back(Scenery({0.0f,-1.0f,0.0f},{200.0f,0.0f,200.0f}, {126,105,180,255},{126,105,180,255}, models["ground"], textures, models));
     RenderTexture2D target = LoadRenderTexture(WIDTH, HEIGHT);
     int chunkW = 2;
     int chunkH = 2;
@@ -347,6 +349,10 @@ int main(int argc, char* argv[])
             for (int i = 0; i < levels[currentLevel].levelSize / levels[currentLevel].chunkSize; i++){
                 for (int j = 0; j < levels[currentLevel].levelSize / levels[currentLevel].chunkSize; j++){
                     for (auto &e : levels[currentLevel].chunks[j][i].entities) {
+                        if (e.hp <= 0) {
+                            continue;
+                        }
+                    //vec.erase(std::remove_if(vec.begin(), vec.end(), [](std::unique_ptr<item> const& item) -> bool { return item->id > 10; }), vec.end());
                         Entity entity = e;
                         int cx = ceil(e.pos.x / (float)levels[currentLevel].chunkSize) - 1;
                         int cy = ceil((levels[currentLevel].levelSize - e.pos.y) / (float)levels[currentLevel].chunkSize) - 1;
@@ -501,8 +507,6 @@ int main(int argc, char* argv[])
                     e.collision_entity(delta,e2);
                 }
             }
-            // player.collision_object(ground);
-            //player.collision_object(cube);
             BeginTextureMode(target);
             {
                 ClearBackground(scenes[currentScene].skyColor);
@@ -519,11 +523,11 @@ int main(int argc, char* argv[])
                     }
                 }
                 if (IsKeyDown(KEY_D)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
-                    if (player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder"))
+                    if (player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder"))
                         player.right();
                 }
                 if (IsKeyDown(KEY_A)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-                    if(player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder")) 
+                    if(player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder")) 
                         player.left();
                 }
                 if (IsKeyDown(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {

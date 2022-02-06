@@ -15,16 +15,18 @@ class Scenery {
         Vector3 dim;
         Model model;
         vector<Entity> entities;
+        vector<Object> objects;
     public: 
         vector<SkyBox> skyboxes;
         Color skyColor;
         Color lightColor;
-    Scenery(Vector3 pos, Vector3 dim, Color skyColor, Color lightColor, Model model, map<string, Texture2D> textures) {
+    Scenery(Vector3 pos, Vector3 dim, Color skyColor, Color lightColor, Model model, map<string, Texture2D> textures, map<string, Model> models) {
         this->pos = pos;
         this->model = model;
         this->dim = dim;
         this->vpos = {0.0f,0.0f,0.0f};
-        this->entities = generate(entities, textures);
+        this->entities = generate_entities(entities, textures);
+        this->objects = generate_objects(objects, models);
         this->skyColor = skyColor;
         this->lightColor = lightColor;
         this->skyboxes.push_back(SkyBox(textures["skybox_1"], skyColor, Vector3({0.0f,0.0f,-500.0f})));

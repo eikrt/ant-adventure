@@ -72,7 +72,7 @@ void Entity::tick(float delta) {
     }
 }
 void Entity::jump(float f) {
-    if (blockedDown) {
+    if (blockedDown && !blockedUp) {
         this->moveMode = string("jump");
         this->vpos.y = JUMP_STRENGTH * f;
     }
@@ -158,7 +158,7 @@ void Entity::collision_object(float delta, Object& object) {
     float oBottomY = object.getPos().y - object.getDim().y;
     if (this->z == object.z) { 
     if (vpos.y <= 0 && eBottomY  <= oTopY
-            && eBottomY >= oBottomY + 0.2
+            && eBottomY >= oBottomY + 0.3
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX + 0.2) {
         if (object.visible) {
@@ -188,7 +188,7 @@ void Entity::collision_object(float delta, Object& object) {
         }
     }
     if (
-            eTopY + 0.1 > object.getPos().y &&
+            eTopY + 0.0 > object.getPos().y &&
             eBottomY + 0.1 < oTopY &&
             eRightX >= object.getPos().x &&
             eRightX <= oRightX)
@@ -203,7 +203,7 @@ void Entity::collision_object(float delta, Object& object) {
         }
     }
     if (
-            eTopY + 0.1 > object.getPos().y &&
+            eTopY + 0.0 > object.getPos().y &&
             eBottomY + 0.1 < oTopY &&
             eLeftX >= object.getPos().x &&
             eLeftX <= oRightX)
@@ -257,24 +257,24 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
             && eTopY >= otherEntity.getPos().y
             && ePosX > otherEntity.getPos().x - 0.2 
             && ePosX < oRightX) {
-        blockedUp = true;
+        //blockedUp = true;
         this->collisionAction(delta, otherEntity, "down");
     }
-    if (
-            ePosY > eTopY &&
-            ePosY  < oTopY &&
+    if (vpos.y <= 0 
+            && eBottomY <= oTopY - 0.1f
+            && eBottomY >= oBottomY - 0.0 &&
             eRightX >= otherEntity.getPos().x &&
             eRightX <= oRightX)
     {
-        this->collisionAction(delta, otherEntity, "side");
+        this->collisionAction(delta, otherEntity, "sidel");
     }
     if (
-            ePosY > oTopY &&
-            ePosY < oTopY &&
+            eBottomY <= oTopY - 0.1f
+            && eBottomY >= oBottomY - 0.0 &&
             eLeftX >= otherEntity.getPos().x &&
-            eLeftX <= oRightX)
+            eLeftX <= oRightX + 0.2f)
     {
-        this->collisionAction(delta, otherEntity, "side");
+        this->collisionAction(delta, otherEntity, "sider");
     }
 
     }
@@ -297,6 +297,19 @@ void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) 
             }
             if (dir == "up" && string(otherEntity.type) == "mini_trampoline") {
                 this->jump(1.5);
+            }
+            if (dir == "sidel") {
+                if (string(otherEntity.type) == "key_door") {
+                    this->blockedRight = true;
+                    this->stopX();
+                }
+            }
+            if (dir == "sider") {
+                if (string(otherEntity.type) == "key_door") {
+                    this->blockedLeft = true;
+                    this->stopX();
+
+                }
             }
             if (string(otherEntity.type) == "belt_left") {
                 this->vpos.x -= 80 * delta / 1000;
