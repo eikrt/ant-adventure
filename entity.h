@@ -19,6 +19,7 @@ class Entity {
         int id;
         int blockersLeft = 0;
         Vector3 pos;
+        Vector3 startPos;
         Vector3 vpos;
         Vector3 dim;
         const char* type;
@@ -39,6 +40,7 @@ class Entity {
         int carrierId;
     Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, float z, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
+        this->startPos = {pos.x, pos.y, pos.z};
         this->carrierPos = Vector3({0.0f,0.0f,0.0f});
         this->carried = false;
         this->carrierId = -1;

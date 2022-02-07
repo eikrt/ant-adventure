@@ -35,13 +35,12 @@ void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> leve
     player.hp = 1;
     player.coins = 0;
     player.tokens = 0;
-    level.initLevel();
     camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
     camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
     player.hp = 1;
-    player.pos.x = levels[currentLevel].startPos.x + 0.1f;
-    player.pos.y = levels[currentLevel].startPos.y;
-    player.pos.z = levels[currentLevel].startPos.z + 0.5f;
+    player.pos.x = player.startPos.x + 0.1f;
+    player.pos.y = player.startPos.y;
+    player.pos.z = player.startPos.z + 0.5f;
     player.z = levels[currentLevel].startPos.z;
     player.blockersLeft = level.blockers; 
 
@@ -116,6 +115,7 @@ int main(int argc, char* argv[])
     textures["key_door"] = LoadTexture("res/key_door.png");
     textures["cloud_1"] = LoadTexture("res/cloud_1.png");
     textures["cloud_2"] = LoadTexture("res/cloud_2.png");
+    textures["checkpoint"] = LoadTexture("res/checkpoint.png");
     vector<Texture2D> buttonTextures;
     buttonTextures.push_back(textures["mainMenuButton0"]);
     buttonTextures.push_back(textures["mainMenuButton1"]);
@@ -172,6 +172,10 @@ int main(int argc, char* argv[])
     levels.push_back(Level("Courtyard", "levels/level_1_", models, textures, 0));
     levels.push_back(Level("Cellar", "levels/level_2_", models, textures, 0));
     levels.push_back(Level("Armory", "levels/level_2_", models, textures, 0));
+    levels[currentLevel].initLevel();
+                player.startPos.x = levels[currentLevel].startPos.x;
+                player.startPos.y = levels[currentLevel].startPos.y;
+                player.startPos.z = levels[currentLevel].startPos.z;
     startLevel(camera,player,levels[currentLevel],levels,currentLevel);
     for (auto &m : models) {
         m.second.materials[0].shader = shaders["default"];
@@ -225,8 +229,11 @@ int main(int argc, char* argv[])
         else if (currentmoveMode == story) {
             if (IsKeyPressed(KEY_SPACE)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
                 currentmoveMode = game;
-                startLevel(camera,player,levels[currentLevel],levels,currentLevel);
                 levels[currentLevel].initLevel();
+                player.startPos.x = levels[currentLevel].startPos.x;
+                player.startPos.y = levels[currentLevel].startPos.y;
+                player.startPos.z = levels[currentLevel].startPos.z;
+                startLevel(camera,player,levels[currentLevel],levels,currentLevel);
 
             }
             camera.position.x += 1 * delta / 1000;

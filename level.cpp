@@ -222,6 +222,14 @@ void Level::initLevel() {
 
 
                         }
+                        if (this->bytes[k][i * levelSize + j] == '@') {
+                            vector<Texture2D> texs;
+                            texs.push_back(this->textures["checkpoint"]);
+                            Entity entity = Entity(rand(), 0, "checkpoint", "gameplay", 0.00f, {(float)x + 0.5f,y + 0.5f,z + gz},z,{1.0f,0.5f,0.1f}, 1.0f, texs);
+                            this->chunks[h][n].entities.push_back(entity);
+
+
+                        }
                         if (this->bytes[k][i * levelSize + j] == 'p') {
                             this->startPos = {x,y+1.0,z};
                             startZ = z;
