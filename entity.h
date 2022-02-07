@@ -91,7 +91,8 @@ class Entity {
     void up();
     void down();
     void stopX();
-    void slowX(float delta);
+    void slowX(float delta, float strength);
+    void slowY(float delta, float strength);
     void stopY();
     void stopZ();
 

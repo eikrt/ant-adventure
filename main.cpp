@@ -82,6 +82,7 @@ int main(int argc, char* argv[])
     map<string, Texture2D> textures;
     models["stone_brick_dark"] = LoadModel("models/cube.obj");
     models["stone_brick_light"] = LoadModel("models/cube.obj");
+    models["water_1"] = LoadModel("models/cube.obj");
     models["ground"] = LoadModel("models/scenery.obj");
 
     textures["player"] = LoadTexture("res/ant_worker_side_1.png");
@@ -104,6 +105,7 @@ int main(int argc, char* argv[])
     textures["trampoline"] = LoadTexture("res/trampoline.png");
     textures["blocker"] = LoadTexture("res/blocker.png");
     textures["belt"] = LoadTexture("res/belt.png");
+    textures["water_1"] = LoadTexture("res/water_1.png");
     textures["door_next_level"] = LoadTexture("res/door_next_level.png");
     textures["door_next_level_locked"] = LoadTexture("res/door_next_level_locked.png");
     textures["skybox_1"] = LoadTexture("res/sky_1.png");
@@ -126,6 +128,7 @@ int main(int argc, char* argv[])
     gameOverButtons.push_back(Button({32.0, 120.0},"Quit", fonts[0], buttonTextures));
     models["stone_brick_light"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stone_brick_light"];
     models["stone_brick_dark"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["stone_brick_dark"];
+    models["water_1"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["water_1"];
     models["ground"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["grass"];
     vector<Texture2D> texs;
     texs.push_back(textures["player"]);
@@ -531,7 +534,7 @@ int main(int argc, char* argv[])
                 ClearBackground(scenes[currentScene].skyColor);
 
                 if (IsKeyPressed(KEY_SPACE) ||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) {
-                    if (player.moveMode == string("normal")) {
+                    if (player.moveMode == string("normal") || player.moveMode == string("water")) {
                         player.jump(1.0);
 
                     } else if (player.moveMode == string("jump")) {
@@ -542,32 +545,32 @@ int main(int argc, char* argv[])
                     }
                 }
                 if (IsKeyDown(KEY_D)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)){
-                    if (player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder"))
+                    if (player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder") || player.moveMode == string("water"))
                         player.right();
                 }
                 if (IsKeyDown(KEY_A)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT)) {
-                    if(player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder")) 
+                    if(player.moveMode == string("flying") || player.moveMode == string("jump") ||player.moveMode == string("normal") ||player.moveMode == string("ladder") || player.moveMode == string("water")) 
                         player.left();
                 }
                 if (IsKeyDown(KEY_W)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-                    if(player.moveMode == string("ladder")) {
+                    if(player.moveMode == string("ladder") || player.moveMode == string("water")) {
                         player.up();
                     }
                 }
                 if (IsKeyReleased(KEY_W)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_UP)) {
-                    if(player.moveMode == string("ladder")) {
+                    if(player.moveMode == string("ladder") || player.moveMode == string("water")) {
                         player.vpos.y = 0;
                     }
 
                 }
                 if (IsKeyReleased(KEY_S)||IsGamepadButtonReleased(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-                    if(player.moveMode == string("ladder")) {
+                    if(player.moveMode == string("ladder") || player.moveMode == string("water")) {
                         player.vpos.y= 0;
                     }
 
                 }
                 if (IsKeyDown(KEY_S)||IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN)) {
-                    if(player.moveMode == string("ladder")) {
+                    if(player.moveMode == string("ladder") || player.moveMode == string("water")) {
                         player.down();
                     }
                 }
@@ -581,7 +584,7 @@ int main(int argc, char* argv[])
                 }
                 if ((!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))||(IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT && IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT)))){
                     if (player.moveMode == string("normal") || (player.moveMode == string("jump") ||player.moveMode == string("ladder")))
-                        player.slowX(delta);
+                        player.slowX(delta, 1.0f);
                 }
                 if (IsKeyPressed(KEY_X)||IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_TRIGGER_1)) {
                     player.back();
@@ -590,17 +593,6 @@ int main(int argc, char* argv[])
                     player.forward();
                 }
                 BeginMode3D(camera);
-                for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
-                    for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
-                        for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
-
-                            if (obj.getHp() <= 0) {
-                                continue;
-                            }
-                            obj.render(camera);
-                        }
-                    }
-                }
                 BeginShaderMode(alphaDiscard);
                 for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
                     for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
@@ -613,11 +605,22 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
+                player.render(camera);
                 
                 scenes[currentScene].render(camera);
                 
                 EndShaderMode(); 
-                player.render(camera);
+                for (int i = 0; i < levels[currentLevel].chunks.size(); i++) {
+                    for (int j = 0; j < levels[currentLevel].chunks[i].size(); j++) {
+                        for (auto &obj : levels[currentLevel].chunks[i][j].objects) {
+
+                            if (obj.getHp() <= 0) {
+                                continue;
+                            }
+                            obj.render(camera);
+                        }
+                    }
+                }
                 EndMode3D();
                 EndTextureMode();
 

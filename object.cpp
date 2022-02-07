@@ -35,8 +35,12 @@ int Object::getHp() {
     return this->hp;
 }
 void Object::render(Camera camera) {
-            if (this->visible)
+            if (this->visible && this->type != string("water"))
                 DrawModel(this->model, {this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2 + this->offsetY, this->pos.z+ this->dim.z/2},
                         0.5f, BROWN);
+            else if (this->type == string("water")) {
+               DrawCubeV({this->pos.x + this->dim.x/2, this->pos.y+ this->dim.y/2 + this->offsetY, this->pos.z+ this->dim.z/2}, {1.0f,1.0f,1.0f}, {0,0,255,20}); 
+            
 
+        }
 }

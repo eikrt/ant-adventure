@@ -42,6 +42,13 @@ void Level::initLevel() {
 ;
                             this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,z + fz},z, fy, {1.0f,1.0f,1.0f}, true, "cube", this->models["stone_brick_light"]));
                         }
+                        if (this->bytes[k][i * levelSize + j] == 'w') {
+                            for (int l = 0; l < 3; l++) {
+                                this->chunks[h][n].objects.push_back(Object({(float) x ,(float) y,l},l, 0.0f, {1.0f,1.0f,1.0f}, true,"water", this->models["water_1"]));
+
+
+                            }
+                        }
 
                         if (this->bytes[k][i * levelSize + j] == 'f'){
                             float f = (float)rand()/(float)(RAND_MAX/0.2);

@@ -35,7 +35,7 @@ void Entity::tick(float delta) {
     }
     if (this->moveMode == string("normal")) {
         if (this->category == string("carriable")) {
-            this->slowX(delta); 
+            this->slowX(delta, 1.0f); 
         }
     }
     if (this->pos.y < 0) {
@@ -69,7 +69,7 @@ void Entity::tick(float delta) {
     this-> blockedLeft = false;
     this->blockedDown = false;
     this->blockedUp = false;
-    if (this->moveMode == string("ladder")) {
+    if (this->moveMode == string("ladder") || this->moveMode == string("water")) {
         this->moveMode = string("normal");
     }
 
@@ -81,6 +81,9 @@ void Entity::jump(float f) {
     if (blockedDown && !blockedUp) {
         this->moveMode = string("jump");
         this->vpos.y = JUMP_STRENGTH * f;
+    }
+    if (this->moveMode == string("water")) {
+        this-> vpos.y = JUMP_STRENGTH * f;
     }
 }
 void Entity::cannon() {
@@ -133,12 +136,23 @@ void Entity::stopY() {
 void Entity::stopZ() {
     this->vpos.z = 0.0f;
 }
-void Entity::slowX(float delta) {
+void Entity::slowY(float delta, float strength) {
+    if (this->vpos.y < -0.2) {
+        this->vpos.y += 25 * delta / 1000 * strength;
+    }
+    else if (this->vpos.y > 0.2) {
+        this->vpos.y -= 25 * delta / 1000 * strength;
+    }
+    else {
+        this->stopX();
+    }
+}
+void Entity::slowX(float delta, float strength) {
     if (this->vpos.x < -0.2) {
-        this->vpos.x += 25 * delta / 1000;
+        this->vpos.x += 25 * delta / 1000 * strength;
     }
     else if (this->vpos.x > 0.2) {
-        this->vpos.x -= 25 * delta / 1000;
+        this->vpos.x -= 25 * delta / 1000 * strength;
     }
     else {
         this->stopX();
@@ -148,7 +162,7 @@ void Entity::tilt(float t) {
     this->rot += t;
 }
 void Entity::collision_object(float delta, Object& object) {
-    if (this->type == string("bird")) {
+    if (this->type == string("bird") ||this->type == string("water")) {
         return;
     }
     float ePosX = this->pos.x+this->vpos.x *delta / 1000;
@@ -167,7 +181,7 @@ void Entity::collision_object(float delta, Object& object) {
             && eBottomY >= oBottomY + 0.3
             && ePosX > object.getPos().x - 0.2 
             && ePosX < oRightX + 0.2) {
-        if (object.visible) {
+        if (object.visible && object.type != string("water")) {
         blockedDown = true;
 
             if (eBottomY <= oTopY && this->category != string("prop")) {
@@ -175,6 +189,9 @@ void Entity::collision_object(float delta, Object& object) {
                 this->pos.y = oTopY + this->dim.y;
             }
             this->stopY();
+        }  else if (object.type == string("water")) {
+            this->moveMode = "water";
+            this->slowY(delta, 1.0f);
         }
     }
     if (eTopY  <= oTopY
@@ -183,11 +200,15 @@ void Entity::collision_object(float delta, Object& object) {
             && ePosX < oRightX) {
         if (object.type == string("cube")) {
 
-        if (object.visible) {
+        if (object.visible && object.type != string("water")) {
         blockedUp = true;
         if (eBottomY > object.getPos().y + object.getDim().y) {
         
            // this->pos.y += this->pos.y + this->pos.y - (this->dim.y - object.getPos().y + object.getDim().y);
+        }  else if (object.type == string("water")) {
+            this->slowY(delta, 1.0f);
+            this->moveMode = "water";
+
         }
         this->vpos.y = -0.1f;
             }
@@ -199,9 +220,13 @@ void Entity::collision_object(float delta, Object& object) {
             eRightX >= object.getPos().x &&
             eRightX <= oRightX)
     {
-        if (object.visible) {
+        if (object.visible && object.type != string("water")) {
         blockedRight = true;
         this->stopX();
+        }
+        else if (object.type == string("water")) {
+            this->slowX(delta, 1.0f);
+            this->moveMode = "water";
         }
         if (string(this->type) == "roboant" ){
             this->left();
@@ -214,9 +239,13 @@ void Entity::collision_object(float delta, Object& object) {
             eLeftX >= object.getPos().x &&
             eLeftX <= oRightX)
     {
-        if (object.visible) {
+        if (object.visible && object.type != string("water")) {
             blockedLeft = true;
             this->stopX();
+        }  else if (object.type == string("water")) {
+            this->slowX(delta, 1.0f);
+            this->moveMode = "water";
+
         }
         if (string(this->type) == "roboant" ){
             this->right();
@@ -384,4 +413,7 @@ void Entity::render(Camera camera) {
             else if (moveMode == string("locked")) {
                 DrawBillboard(camera,this->texs[1],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
            }
+            else {
+                DrawBillboard(camera,this->texs[0],{this->pos.x, this->pos.y, this->pos.z}, this->scale, WHITE);
+            }
 }

@@ -32,8 +32,8 @@ vector<Entity> generate_entities(vector<Entity> entities, map<string, Texture2D>
         uniform_real_distribution<> distr(0, 8.0f);
         uniform_real_distribution<> distr2(0, 32.0f);
         uniform_real_distribution<> distr3(0, 64.0f);
-        for (int i = 0; i < 256; i++) {
-            for (int j = 0; j < 200; j++) {
+        for (int i = 0; i < 25; i++) {
+            for (int j = 0; j < 20; j++) {
                 float offsetX = distr(gen);
                 float offsetZ = distr(gen);
                 if (perlin2d(i,j,0.1,1) > 0.8f) {
