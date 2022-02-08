@@ -31,12 +31,17 @@ class Entity {
         float launchSpeed;
         int coins;
         int tokens;
+        int lastCoins;
+        int lastTokens;
         vector<string> artifacts;
+        vector<string> lastArtifacts;
+        float startZ;
         float gravity;
         bool nextLevel;
         float z;
         Vector3 carrierPos;
         bool carried;
+        bool checkpointed;
         int carrierId;
     Entity(int id, float gravity, const char* type, const char* category, float speed, Vector3 pos, float z, Vector3 dim, float scale, vector<Texture2D> texs) {
         this->pos = pos;
@@ -60,11 +65,14 @@ class Entity {
         this->cannonTime = 500;
         this->cannonChange = 0;
         this->coins = 0;
+        this->lastCoins = 0;
+        this->lastTokens = 0;
         this-> gravity = gravity;
         this->tokens = 0;
         this->blockersLeft = 0;
         this->nextLevel = false;
         this->z = z;
+        this->checkpointed = false;
         blockedLeft = false;
         blockedRight = false;
         blockedDown = false;

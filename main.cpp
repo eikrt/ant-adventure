@@ -5,6 +5,7 @@
 #include "button.h"
 #include "scenery.h"
 #include "level.h"
+#include "chunk.h"
 #include "textpage.h"
 #include <vector>
 #include <map>
@@ -33,16 +34,21 @@ const float SCREENMARGIN_Y = 64.0;
 using namespace std;
 void startLevel(Camera& camera, Entity& player, Level& level, vector<Level> levels, int currentLevel) {
     player.hp = 1;
-    player.coins = 0;
-    player.tokens = 0;
-    camera.position = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 8,levels[currentLevel].startPos.z + 15};
-    camera.target = {levels[currentLevel].startPos.x,levels[currentLevel].startPos.y + 6,levels[currentLevel].startPos.z};
+    player.coins = player.lastCoins;
+    player.tokens = player.lastTokens;
+    camera.position = {player.startPos.x,player.startPos.y + 8,player.startPos.z + 15};
+    camera.target = {player.startPos.x,player.startPos.y + 6,player.startPos.z};
     player.hp = 1;
+    player.moveMode == string("normal");
     player.pos.x = player.startPos.x + 0.1f;
-    player.pos.y = player.startPos.y;
+    player.pos.y = player.startPos.y + 1.0f;
     player.pos.z = player.startPos.z + 0.5f;
-    player.z = levels[currentLevel].startPos.z;
+    player.vpos.x = 0.0f;
+    player.vpos.y = 0.0f;
+    player.vpos.z = 0.0f;
+    player.z = player.startZ;
     player.blockersLeft = level.blockers; 
+
 
 }
 int main(int argc, char* argv[])
@@ -173,9 +179,10 @@ int main(int argc, char* argv[])
     levels.push_back(Level("Cellar", "levels/level_2_", models, textures, 0));
     levels.push_back(Level("Armory", "levels/level_2_", models, textures, 0));
     levels[currentLevel].initLevel();
-                player.startPos.x = levels[currentLevel].startPos.x;
-                player.startPos.y = levels[currentLevel].startPos.y;
-                player.startPos.z = levels[currentLevel].startPos.z;
+    player.startPos.x = levels[currentLevel].startPos.x;
+    player.startPos.y = levels[currentLevel].startPos.y;
+    player.startPos.z = levels[currentLevel].startPos.z;
+    player.startZ = levels[currentLevel].startZ;
     startLevel(camera,player,levels[currentLevel],levels,currentLevel);
     for (auto &m : models) {
         m.second.materials[0].shader = shaders["default"];
@@ -233,6 +240,7 @@ int main(int argc, char* argv[])
                 player.startPos.x = levels[currentLevel].startPos.x;
                 player.startPos.y = levels[currentLevel].startPos.y;
                 player.startPos.z = levels[currentLevel].startPos.z;
+                player.startZ = levels[currentLevel].startZ;
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
 
             }
@@ -333,6 +341,7 @@ int main(int argc, char* argv[])
             if (player.getHp() <= 0) {
                 startLevel(camera,player,levels[currentLevel],levels,currentLevel);
                 levels[currentLevel].initLevel();
+
                 levelAlpha = 255; 
             }
             if (player.blockersLeft <= 0) {
@@ -341,10 +350,16 @@ int main(int argc, char* argv[])
                 }
             }
             if (player.nextLevel) {
+                levels[currentLevel].checkpoint = false;
                 currentLevel += 1;
                 player.nextLevel = false;
                 currentmoveMode = story;
                 continue;
+            }
+            if (player.checkpointed) {
+                player.checkpointed = false;
+                levels[currentLevel].checkpoint = true;
+                levels[currentLevel].bufferChunks = vector(levels[currentLevel].chunks);
             }
             int chunkWa = chunkX - chunkW;
             int chunkWb = chunkX + chunkW;

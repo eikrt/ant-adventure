@@ -317,6 +317,15 @@ void Entity::collision_entity(float delta, Entity& otherEntity) {
 void Entity::collisionAction(float delta, Entity& otherEntity, const char* dir) {
 
         if (this->type == string("player")) {
+            if (string(otherEntity.type) == "checkpoint") {
+                this->startPos.x = this->pos.x;
+                this->startPos.y = this->pos.y;
+                this->startPos.z = this->pos.z;
+                this->startZ = this->z;
+                this->lastCoins = this->coins;
+                this->lastTokens = this->tokens;
+                this->checkpointed = true;
+            }
             if (dir != "up" && string(otherEntity.category) == "enemy") {
                 if (string(otherEntity.category) != "blocker")
                     this->damage();
